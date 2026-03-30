@@ -1,0 +1,2868 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study with Lisa — WebCraft Academy 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Cabinet+Grotesk:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===================== DESIGN TOKENS ===================== */
+:root {
+  --ink: #05070d;
+  --ink2: #0c0f1a;
+  --surface: #111520;
+  --card: #161b28;
+  --card2: #1c2235;
+  --border: #232a3d;
+  --border2: #2d3650;
+  --lime: #c8ff57;
+  --lime-dim: rgba(200,255,87,0.12);
+  --lime-glow: rgba(200,255,87,0.25);
+  --cyan: #57e5ff;
+  --cyan-dim: rgba(87,229,255,0.1);
+  --rose: #ff5778;
+  --rose-dim: rgba(255,87,120,0.1);
+  --amber: #ffb830;
+  --amber-dim: rgba(255,184,48,0.1);
+  --violet: #a78bfa;
+  --text: #e2e8f5;
+  --muted: #6b7a99;
+  --muted2: #4a566e;
+  --mono: 'JetBrains Mono', monospace;
+  --display: 'Cabinet Grotesk', sans-serif;
+}
+
+/* ===================== LIGHT MODE TOKENS ===================== */
+html.light {
+  --ink: #f0f2f8;
+  --ink2: #e4e8f2;
+  --surface: #ffffff;
+  --card: #ffffff;
+  --card2: #f5f7fd;
+  --border: #dde2f0;
+  --border2: #c8d0e8;
+  --text: #0f1629;
+  --muted: #5a6480;
+  --muted2: #8892aa;
+  --lime: #5c9900;
+  --lime-dim: rgba(92,153,0,0.08);
+  --lime-glow: rgba(92,153,0,0.2);
+  --cyan: #0080aa;
+  --cyan-dim: rgba(0,128,170,0.08);
+}
+html.light body { cursor: auto; }
+html.light .cursor, html.light .cursor-ring { display: none; }
+html.light .bg-grid { background-image: linear-gradient(rgba(0,0,0,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.03) 1px,transparent 1px); }
+html.light .orb1 { background: rgba(92,153,0,0.06); }
+html.light .orb2 { background: rgba(0,128,170,0.04); }
+html.light .sidebar { background: rgba(255,255,255,0.97); }
+html.light .hero-title { color: var(--text); }
+html.light .hero-title .line2 { -webkit-text-stroke: 1px rgba(92,153,0,0.4); }
+html.light .logo-title { color: var(--text); }
+html.light .author-name { color: var(--text); }
+html.light .card-title, html.light .tl-head, html.light .flow-title,
+html.light .quiz-q, html.light .step-heading h2, html.light .final-cta h2 { color: var(--text); }
+html.light .tool-name { color: var(--text); }
+html.light .cn-label { color: var(--text); }
+html.light .feat-table td:first-child { color: var(--text); }
+html.light .code-wrap { background: #1a1e2e; }
+html.light .hero-bg-text { color: rgba(92,153,0,0.04); }
+html.light .nav-item.active, html.light .nav-item:hover { background: rgba(92,153,0,0.06); }
+html.light .btn-primary { color: #fff; }
+html.light .check-item.checked .check-box svg path { stroke: #fff; }
+html.light .nav-item.done .nav-check { color: #fff; }
+html.light .phase-tab.active { color: #fff; border-color: var(--lime); }
+
+/* ===================== THEME TOGGLE ===================== */
+.theme-toggle {
+  display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.65rem 1.4rem;
+  border-top: 1px solid var(--border);
+  cursor: pointer; transition: background 0.2s; user-select: none;
+}
+.theme-toggle:hover { background: rgba(200,255,87,0.04); }
+.toggle-track {
+  width: 36px; height: 20px; border-radius: 99px;
+  background: var(--border2); position: relative; transition: background 0.25s; flex-shrink: 0;
+}
+.toggle-track.on { background: var(--lime); }
+html.light .toggle-track.on { background: var(--lime); }
+.toggle-thumb {
+  width: 14px; height: 14px; border-radius: 50%; background: #fff;
+  position: absolute; top: 3px; left: 3px;
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+.toggle-track.on .toggle-thumb { transform: translateX(16px); }
+.toggle-label { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); letter-spacing: 0.06em; }
+.toggle-icon { font-size: 0.85rem; }
+
+/* ===================== TOAST ===================== */
+#toast-container {
+  position: fixed; bottom: 1.5rem; right: 1.5rem;
+  z-index: 99998; display: flex; flex-direction: column;
+  gap: 0.5rem; pointer-events: none;
+}
+.toast {
+  display: flex; align-items: center; gap: 0.7rem;
+  background: var(--card2); border: 1px solid var(--border2);
+  border-radius: 12px; padding: 0.75rem 1.1rem;
+  font-size: 0.82rem; color: var(--text); font-family: var(--mono);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  transform: translateX(120%); transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+  opacity: 0; pointer-events: none; max-width: 300px;
+}
+.toast.show { transform: translateX(0); opacity: 1; }
+.toast.hide { transform: translateX(120%); opacity: 0; }
+.toast-icon { font-size: 1.1rem; flex-shrink: 0; }
+.toast-lime { border-color: rgba(200,255,87,0.35); }
+.toast-amber { border-color: rgba(255,184,48,0.35); }
+.toast-cyan { border-color: rgba(87,229,255,0.35); }
+.toast-rose { border-color: rgba(255,87,120,0.35); }
+html.light .toast { box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
+
+/* ===================== XP / STATS ===================== */
+.xp-wrap {
+  padding: 0.75rem 1.4rem 0.8rem;
+  border-bottom: 1px solid var(--border);
+}
+.xp-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; }
+.xp-label { font-family: var(--mono); font-size: 0.58rem; color: var(--muted); letter-spacing: 0.08em; }
+.xp-val { font-family: var(--mono); font-size: 0.68rem; font-weight: 700; color: var(--amber); }
+.xp-track { height: 4px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.xp-bar { height: 100%; background: linear-gradient(90deg,var(--amber),var(--rose)); border-radius: 99px; transition: width 0.6s cubic-bezier(0.4,0,0.2,1); width: 0%; }
+.stat-pills { display: flex; gap: 0.4rem; margin-top: 0.5rem; flex-wrap: wrap; }
+.stat-pill {
+  font-family: var(--mono); font-size: 0.57rem; padding: 2px 8px; border-radius: 99px;
+  border: 1px solid var(--border2); color: var(--muted);
+  display: flex; align-items: center; gap: 4px; background: var(--card2);
+}
+.stat-pill .sp-icon { font-size: 0.7rem; }
+.stat-pill.streak { border-color: rgba(255,184,48,0.35); color: var(--amber); }
+.stat-pill.xp-pill { border-color: rgba(255,87,120,0.35); color: var(--rose); }
+.stat-pill.time-pill { border-color: rgba(87,229,255,0.35); color: var(--cyan); }
+
+/* ===================== STEP DONE BADGE ===================== */
+.step-complete-badge {
+  display: none; align-items: center; gap: 0.6rem; margin-top: 1.2rem;
+  padding: 0.8rem 1.2rem;
+  background: rgba(200,255,87,0.06); border: 1px solid rgba(200,255,87,0.2);
+  border-radius: 12px; font-size: 0.82rem; color: var(--lime);
+  font-family: var(--mono); animation: fadeIn 0.4s ease;
+}
+.step-complete-badge.show { display: flex; }
+
+/* ===================== RESET ===================== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--ink);
+  color: var(--text);
+  font-family: 'Cabinet Grotesk', sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ===================== CURSOR ===================== */
+.cursor {
+  width: 12px; height: 12px;
+  background: var(--lime);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform 0.15s ease, opacity 0.2s;
+  mix-blend-mode: exclusion;
+}
+.cursor-ring {
+  width: 36px; height: 36px;
+  border: 1.5px solid rgba(200,255,87,0.5);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  transition: all 0.12s ease;
+  mix-blend-mode: exclusion;
+}
+
+/* ===================== ANIMATED BG ===================== */
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(200,255,87,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200,255,87,0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+.bg-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+.orb1 { width: 500px; height: 500px; background: rgba(200,255,87,0.04); top: -100px; left: -100px; }
+.orb2 { width: 400px; height: 400px; background: rgba(87,229,255,0.03); bottom: 20%; right: -80px; }
+.orb3 { width: 300px; height: 300px; background: rgba(167,139,250,0.04); top: 50%; left: 30%; }
+
+/* ===================== LAYOUT ===================== */
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* ===================== SIDEBAR ===================== */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: 280px;
+  background: rgba(17,21,32,0.95);
+  border-right: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  overflow: hidden;
+}
+.sidebar-inner { overflow-y: auto; flex: 1; padding-bottom: 1rem; }
+.sidebar-inner::-webkit-scrollbar { width: 3px; }
+.sidebar-inner::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* LOGO */
+.logo-wrap {
+  padding: 1.4rem 1.4rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.logo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--lime-dim);
+  border: 1px solid rgba(200,255,87,0.2);
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--lime);
+  letter-spacing: 0.1em;
+  margin-bottom: 0.7rem;
+}
+.logo-badge::before { content: '●'; font-size: 0.45rem; animation: blink 1.5s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.logo-title {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.2;
+}
+.logo-title span { color: var(--lime); }
+
+/* PROGRESS */
+.progress-wrap {
+  padding: 0.8rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+}
+.progress-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.progress-label {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+}
+.progress-pct {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--lime);
+}
+.progress-track {
+  height: 3px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--lime), var(--cyan));
+  border-radius: 99px;
+  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  width: 0%;
+}
+
+/* NAV */
+.nav-group { padding: 0.8rem 0 0; }
+.nav-group-label {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  color: var(--muted2);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0 1.4rem 0.4rem;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.5rem 1.4rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  text-decoration: none;
+}
+.nav-item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--lime);
+  transform: scaleY(0);
+  transition: transform 0.2s;
+  border-radius: 0 2px 2px 0;
+}
+.nav-item:hover::before, .nav-item.active::before { transform: scaleY(1); }
+.nav-item:hover, .nav-item.active {
+  background: rgba(200,255,87,0.04);
+}
+.nav-step-num {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--muted2);
+  min-width: 22px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.nav-item.active .nav-step-num, .nav-item.done .nav-step-num { color: var(--lime); }
+.nav-step-name {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--muted);
+  transition: color 0.2s;
+  line-height: 1.3;
+}
+.nav-item:hover .nav-step-name, .nav-item.active .nav-step-name { color: var(--text); }
+.nav-item.done .nav-step-name { color: var(--muted); }
+.nav-check {
+  margin-left: auto;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  font-size: 0.55rem;
+  flex-shrink: 0;
+}
+.nav-item.done .nav-check {
+  background: var(--lime);
+  border-color: var(--lime);
+  color: #000;
+}
+.nav-item.done .nav-check::after { content: '✓'; font-weight: 700; }
+
+/* SIDEBAR FOOTER */
+.sidebar-footer {
+  border-top: 1px solid var(--border);
+  padding: 1rem 1.4rem;
+}
+.author-card {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.author-avatar {
+  width: 34px; height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--lime), var(--cyan));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.author-name { font-size: 0.82rem; font-weight: 700; color: #fff; }
+.author-role { font-family: var(--mono); font-size: 0.58rem; color: var(--muted); }
+
+/* ===================== MAIN ===================== */
+.main { margin-left: 280px; min-height: 100vh; }
+
+/* ===================== HERO ===================== */
+.hero {
+  padding: 5rem 4rem 4rem;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+.hero-bg-text {
+  position: absolute;
+  right: -2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18vw;
+  font-weight: 900;
+  color: rgba(200,255,87,0.02);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  line-height: 1;
+}
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 5px 14px;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  margin-bottom: 1.8rem;
+  background: var(--card);
+}
+.hero-eyebrow .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--lime);
+  box-shadow: 0 0 8px var(--lime);
+}
+.hero-title {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 900;
+  line-height: 1.0;
+  color: #fff;
+  margin-bottom: 1.2rem;
+  letter-spacing: -0.02em;
+}
+.hero-title .line2 {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(200,255,87,0.4);
+}
+.hero-title .accent { color: var(--lime); -webkit-text-stroke: 0; }
+.hero-desc {
+  font-size: 1.05rem;
+  color: var(--muted);
+  max-width: 580px;
+  line-height: 1.75;
+  margin-bottom: 2.5rem;
+  font-weight: 400;
+}
+.hero-meta {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+}
+.meta-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border: 1px solid var(--border2);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--muted);
+  background: var(--card);
+  transition: all 0.2s;
+  cursor: default;
+}
+.meta-pill:first-child { border-radius: 8px 0 0 8px; }
+.meta-pill:last-child { border-radius: 0 8px 8px 0; border-left: none; }
+.meta-pill:not(:first-child):not(:last-child) { border-left: none; }
+.meta-pill .icon { font-size: 0.8rem; }
+.meta-pill strong { color: var(--lime); }
+
+/* ===================== CONTENT ===================== */
+.content-wrap {
+  padding: 3rem 4rem;
+  max-width: 980px;
+}
+
+/* SECTION STEPS */
+.step-block {
+  margin-bottom: 5rem;
+  scroll-margin-top: 1.5rem;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.step-block.visible { opacity: 1; transform: translateY(0); }
+
+.step-label {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.4rem;
+}
+.step-num-badge {
+  width: 42px; height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.num-lime { background: rgba(200,255,87,0.12); color: var(--lime); border: 1px solid rgba(200,255,87,0.25); }
+.num-cyan { background: rgba(87,229,255,0.1); color: var(--cyan); border: 1px solid rgba(87,229,255,0.2); }
+.num-rose { background: rgba(255,87,120,0.1); color: var(--rose); border: 1px solid rgba(255,87,120,0.2); }
+.num-amber { background: rgba(255,184,48,0.1); color: var(--amber); border: 1px solid rgba(255,184,48,0.2); }
+.num-violet { background: rgba(167,139,250,0.1); color: var(--violet); border: 1px solid rgba(167,139,250,0.2); }
+
+.step-heading { flex: 1; }
+.step-heading h2 {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+.step-heading .step-tag {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--muted2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.step-divider { height: 1px; background: linear-gradient(90deg, var(--border2), transparent); margin-bottom: 1.5rem; }
+
+/* ===================== CARDS ===================== */
+.glass-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.glass-card:hover {
+  border-color: var(--border2);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+}
+.card-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.card-body {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.75;
+}
+.card-body strong { color: var(--text); font-weight: 600; }
+
+/* HIGHLIGHT CARD */
+.hl-card {
+  border-radius: 16px;
+  padding: 1.4rem 1.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  display: flex;
+  gap: 0.8rem;
+  align-items: flex-start;
+}
+.hl-lime { background: rgba(200,255,87,0.06); border: 1px solid rgba(200,255,87,0.18); color: rgba(200,255,87,0.85); }
+.hl-cyan { background: rgba(87,229,255,0.06); border: 1px solid rgba(87,229,255,0.15); color: rgba(87,229,255,0.85); }
+.hl-rose { background: rgba(255,87,120,0.06); border: 1px solid rgba(255,87,120,0.18); color: rgba(255,87,120,0.85); }
+.hl-amber { background: rgba(255,184,48,0.06); border: 1px solid rgba(255,184,48,0.18); color: rgba(255,184,48,0.85); }
+.hl-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+
+/* GRID 2COL */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin-bottom: 1rem; }
+
+/* TOOL CARD */
+.tool-tile {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.1rem;
+  cursor: default;
+  transition: all 0.22s;
+  position: relative;
+  overflow: hidden;
+}
+.tool-tile::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(200,255,87,0.04), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.tool-tile:hover { border-color: rgba(200,255,87,0.3); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+.tool-tile:hover::after { opacity: 1; }
+.tool-emoji { font-size: 1.5rem; margin-bottom: 0.5rem; }
+.tool-name { font-size: 0.88rem; font-weight: 800; color: #fff; margin-bottom: 0.2rem; }
+.tool-desc { font-size: 0.75rem; color: var(--muted); line-height: 1.5; }
+.tool-badge-tag {
+  position: absolute;
+  top: 0.7rem; right: 0.7rem;
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.tb-free { background: rgba(200,255,87,0.1); color: var(--lime); border: 1px solid rgba(200,255,87,0.2); }
+.tb-req { background: rgba(87,229,255,0.1); color: var(--cyan); border: 1px solid rgba(87,229,255,0.15); }
+
+/* ===================== CODE BLOCKS ===================== */
+.code-wrap {
+  background: #080b12;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin: 1rem 0;
+}
+.code-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.7rem 1.1rem;
+  background: rgba(255,255,255,0.025);
+  border-bottom: 1px solid var(--border);
+}
+.code-dots { display: flex; gap: 5px; }
+.code-dots span {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+}
+.code-dots .d1 { background: #ff5f57; }
+.code-dots .d2 { background: #febc2e; }
+.code-dots .d3 { background: #28c840; }
+.code-filename {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+}
+.code-copy {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--lime);
+  background: rgba(200,255,87,0.08);
+  border: 1px solid rgba(200,255,87,0.2);
+  border-radius: 5px;
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.05em;
+}
+.code-copy:hover { background: rgba(200,255,87,0.15); }
+.code-copy.copied { color: var(--cyan); border-color: rgba(87,229,255,0.3); background: rgba(87,229,255,0.08); }
+.code-pre {
+  padding: 1.3rem 1.4rem;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  line-height: 1.85;
+  color: #8892a8;
+  overflow-x: auto;
+  white-space: pre;
+}
+.code-pre::-webkit-scrollbar { height: 3px; }
+.code-pre::-webkit-scrollbar-thumb { background: var(--border2); }
+/* Syntax colors */
+.kw { color: #c792ea; }
+.str { color: #c3e88d; }
+.cm { color: #546e7a; font-style: italic; }
+.fn { color: #82aaff; }
+.num { color: #f78c6c; }
+.tag { color: #f07178; }
+.attr { color: #ffcb6b; }
+.op { color: #89ddff; }
+.cls { color: #ffcb6b; }
+.cmt { color: #546e7a; }
+
+/* ===================== FILE TREE ===================== */
+.file-tree-wrap {
+  background: #080b12;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin: 1rem 0;
+}
+.file-tree-header {
+  padding: 0.7rem 1.1rem;
+  background: rgba(255,255,255,0.02);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.file-tree-body {
+  padding: 1.2rem 1.4rem;
+  font-family: var(--mono);
+  font-size: 0.79rem;
+  line-height: 2;
+}
+.ft-folder { color: var(--amber); font-weight: 500; }
+.ft-file { color: #8892a8; }
+.ft-ext-js { color: var(--lime); }
+.ft-ext-json { color: var(--cyan); }
+.ft-ext-md { color: var(--violet); }
+.ft-comment { color: var(--muted2); font-style: italic; }
+.ft-indent1 { padding-left: 1.2rem; }
+.ft-indent2 { padding-left: 2.4rem; }
+.ft-indent3 { padding-left: 3.6rem; }
+
+/* ===================== CHECKLIST ===================== */
+.check-list { list-style: none; display: flex; flex-direction: column; gap: 0.45rem; margin: 1rem 0; }
+.check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.55;
+  cursor: pointer;
+  padding: 0.4rem 0.5rem;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+.check-item:hover { background: rgba(255,255,255,0.02); }
+.check-box {
+  flex-shrink: 0;
+  width: 18px; height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid var(--border2);
+  background: var(--card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  margin-top: 1px;
+}
+.check-box svg { display: none; width: 10px; height: 10px; }
+.check-item.checked { color: var(--text); }
+.check-item.checked .check-box {
+  background: var(--lime);
+  border-color: var(--lime);
+}
+.check-item.checked .check-box svg { display: block; }
+
+/* ===================== TIMELINE ===================== */
+.timeline { padding-left: 1rem; border-left: 2px solid var(--border); display: flex; flex-direction: column; gap: 1.2rem; margin: 1rem 0; }
+.tl-node { position: relative; }
+.tl-node::before {
+  content: '';
+  position: absolute;
+  left: -1.5rem;
+  top: 0.35rem;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--lime);
+  box-shadow: 0 0 10px rgba(200,255,87,0.5);
+  border: 2px solid var(--ink);
+}
+.tl-head { font-size: 0.9rem; font-weight: 800; color: #fff; margin-bottom: 0.3rem; }
+.tl-body { font-size: 0.83rem; color: var(--muted); line-height: 1.65; }
+.tl-body code { font-family: var(--mono); font-size: 0.77em; color: var(--lime); background: rgba(200,255,87,0.08); padding: 1px 6px; border-radius: 4px; }
+
+/* ===================== STEPS FLOW ===================== */
+.flow-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 1rem 0;
+}
+.flow-item {
+  display: flex;
+  gap: 1.2rem;
+  align-items: flex-start;
+  position: relative;
+}
+.flow-item:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 32px;
+  bottom: -8px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--border2), transparent);
+}
+.flow-circle {
+  flex-shrink: 0;
+  width: 32px; height: 32px;
+  border-radius: 10px;
+  background: var(--card2);
+  border: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--lime);
+  margin-top: 0;
+}
+.flow-content { padding: 0.3rem 0 1.5rem; }
+.flow-title { font-size: 0.88rem; font-weight: 800; color: #fff; margin-bottom: 0.2rem; }
+.flow-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.6; }
+.flow-desc code { font-family: var(--mono); font-size: 0.78em; color: var(--cyan); background: rgba(87,229,255,0.08); padding: 1px 5px; border-radius: 3px; }
+
+/* ===================== CONCEPT DIAGRAM ===================== */
+.concept-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+  display: flex;
+  gap: 0;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.c-node {
+  background: var(--card2);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  text-align: center;
+  min-width: 90px;
+}
+.c-node .cn-icon { font-size: 1.4rem; margin-bottom: 0.2rem; }
+.c-node .cn-label { font-size: 0.72rem; font-weight: 700; color: var(--text); }
+.c-node .cn-sub { font-family: var(--mono); font-size: 0.6rem; color: var(--muted); }
+.c-arrow {
+  color: var(--muted2);
+  font-size: 1.2rem;
+  padding: 0 0.2rem;
+}
+
+/* ===================== FEATURE TABLE ===================== */
+.feat-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.83rem; }
+.feat-table th {
+  padding: 0.7rem 1rem;
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid var(--border);
+  font-weight: 500;
+}
+.feat-table td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid rgba(35,42,61,0.5);
+  color: var(--muted);
+  vertical-align: top;
+  line-height: 1.5;
+}
+.feat-table td:first-child { color: var(--text); font-weight: 600; }
+.feat-table tr:hover td { background: rgba(255,255,255,0.015); }
+.badge { display: inline-block; font-family: var(--mono); font-size: 0.58rem; padding: 1px 7px; border-radius: 4px; font-weight: 500; }
+.b-yes { background: rgba(200,255,87,0.1); color: var(--lime); border: 1px solid rgba(200,255,87,0.2); }
+.b-no { background: rgba(255,87,120,0.08); color: var(--rose); border: 1px solid rgba(255,87,120,0.15); }
+.b-opt { background: rgba(255,184,48,0.08); color: var(--amber); border: 1px solid rgba(255,184,48,0.15); }
+
+/* ===================== PHASE TABS ===================== */
+.phase-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.2rem; flex-wrap: wrap; }
+.phase-tab {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  padding: 5px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--card);
+}
+.phase-tab.active { background: var(--lime); color: #000; border-color: var(--lime); font-weight: 700; }
+.phase-panel { display: none; }
+.phase-panel.active { display: block; animation: fadeIn 0.2s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:none} }
+
+/* ===================== DIVIDER ===================== */
+.sec-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border2), transparent);
+  margin: 4rem 0;
+}
+
+/* ===================== FINAL CTA ===================== */
+.final-cta {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 3rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  margin: 2rem 0 5rem;
+}
+.final-cta::before {
+  content: '';
+  position: absolute;
+  top: -80px; left: 50%; transform: translateX(-50%);
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(200,255,87,0.08), transparent 70%);
+  pointer-events: none;
+}
+.final-cta h2 {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 0.8rem;
+  letter-spacing: -0.02em;
+}
+.final-cta h2 span { color: var(--lime); }
+.final-cta p {
+  font-size: 0.95rem;
+  color: var(--muted);
+  max-width: 480px;
+  margin: 0 auto 2rem;
+  line-height: 1.75;
+}
+.cta-actions { display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap; }
+.btn-primary {
+  background: var(--lime);
+  color: #000;
+  border: none;
+  padding: 0.8rem 2rem;
+  border-radius: 10px;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(200,255,87,0.3); }
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border2);
+  padding: 0.8rem 2rem;
+  border-radius: 10px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-ghost:hover { color: var(--text); border-color: var(--muted); }
+
+/* ===================== QUIZ MINI ===================== */
+.quiz-wrap {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+}
+.quiz-q { font-size: 0.92rem; font-weight: 700; color: #fff; margin-bottom: 1rem; }
+.quiz-opts { display: flex; flex-direction: column; gap: 0.5rem; }
+.quiz-opt {
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--border2);
+  border-radius: 9px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--card2);
+  text-align: left;
+}
+.quiz-opt:hover { border-color: var(--lime); color: var(--text); }
+.quiz-opt.correct { border-color: var(--lime); background: rgba(200,255,87,0.08); color: var(--lime); }
+.quiz-opt.wrong { border-color: var(--rose); background: rgba(255,87,120,0.08); color: var(--rose); }
+.quiz-result { margin-top: 0.8rem; font-size: 0.82rem; font-family: var(--mono); color: var(--muted); display: none; }
+.quiz-result.show { display: block; }
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+  .sidebar.open { transform: translateX(0); box-shadow: 20px 0 60px rgba(0,0,0,0.5); }
+  .main { margin-left: 0; }
+  .content-wrap { padding: 2rem 1.5rem; }
+  .hero { padding: 4rem 1.5rem 2.5rem; }
+  .grid-2 { grid-template-columns: 1fr; }
+  .grid-3 { grid-template-columns: 1fr 1fr; }
+  .concept-box { flex-direction: column; }
+  .c-arrow { transform: rotate(90deg); }
+}
+@media (max-width: 560px) {
+  .grid-3 { grid-template-columns: 1fr; }
+}
+
+/* ===================== MOBILE TOGGLE ===================== */
+.mob-toggle {
+  display: none;
+  position: fixed;
+  top: 1rem; left: 1rem;
+  z-index: 200;
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--text);
+}
+@media (max-width: 900px) { .mob-toggle { display: flex; align-items: center; } }
+
+/* ===================== ANIMATE IN ===================== */
+@keyframes heroIn { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:none} }
+.hero-eyebrow { animation: heroIn 0.5s ease 0.1s both; }
+.hero-title { animation: heroIn 0.5s ease 0.2s both; }
+.hero-desc { animation: heroIn 0.5s ease 0.3s both; }
+.hero-meta { animation: heroIn 0.5s ease 0.4s both; }
+
+/* inline code */
+code.ic { font-family: var(--mono); font-size: 0.8em; color: var(--lime); background: rgba(200,255,87,0.08); padding: 1px 6px; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<!-- CUSTOM CURSOR -->
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="curR"></div>
+
+<!-- BG -->
+<div class="bg-grid"></div>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<!-- MOBILE TOGGLE -->
+<button class="mob-toggle" onclick="toggleSidebar()">☰</button>
+<div style="display:none" id="swl-brand"></div>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="logo-wrap">
+    <div class="logo-badge">Study with Lisa · 2026</div>
+    <div class="logo-title"><span>Study</span> with Lisa<br><span style="font-size:0.85rem;font-weight:600;color:var(--muted)">WebCraft Academy 2026</span></div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-top">
+      <span class="progress-label" id="prog-txt">0 dari 10 selesai</span>
+      <span class="progress-pct" id="prog-pct">0%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-bar" id="prog-bar"></div>
+    </div>
+  </div>
+
+
+  <!-- XP & STATS -->
+  <div class="xp-wrap">
+    <div class="xp-row">
+      <span class="xp-label">⚡ XP KAMU</span>
+      <span class="xp-val" id="xp-val">0 XP</span>
+    </div>
+    <div class="xp-track"><div class="xp-bar" id="xp-bar"></div></div>
+    <div class="stat-pills">
+      <div class="stat-pill streak"><span class="sp-icon">🔥</span><span id="streak-val">0 hari</span></div>
+      <div class="stat-pill xp-pill"><span class="sp-icon">🏆</span><span id="level-val">Lv.1</span></div>
+      <div class="stat-pill time-pill"><span class="sp-icon">⏱</span><span id="time-val">0m</span></div>
+    </div>
+  </div>
+  <div class="sidebar-inner">
+    <div class="nav-group">
+      <div class="nav-group-label">Fondasi</div>
+      <div class="nav-item" data-target="s0" onclick="goTo('s0')">
+        <span class="nav-step-num">00</span>
+        <span class="nav-step-name">Apa yang Kita Buat?</span>
+        <span class="nav-check"></span>
+      </div>
+      <div class="nav-item" data-target="s1" onclick="goTo('s1')">
+        <span class="nav-step-num">01</span>
+        <span class="nav-step-name">Konsep & Arsitektur</span>
+        <span class="nav-check"></span>
+      </div>
+      <div class="nav-item" data-target="s2" onclick="goTo('s2')">
+        <span class="nav-step-num">02</span>
+        <span class="nav-step-name">Install Tools & Setup</span>
+        <span class="nav-check"></span>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">Membangun APK</div>
+      <div class="nav-item" data-target="s3" onclick="goTo('s3')">
+        <span class="nav-step-num">03</span>
+        <span class="nav-step-name">Inisialisasi Proyek</span>
+        <span class="nav-check"></span>
+      </div>
+      <div class="nav-item" data-target="s4" onclick="goTo('s4')">
+        <span class="nav-step-num">04</span>
+        <span class="nav-step-name">Navigasi & Halaman</span>
+        <span class="nav-check"></span>
+      </div>
+      <div class="nav-item" data-target="s5" onclick="goTo('s5')">
+        <span class="nav-step-num">05</span>
+        <span class="nav-step-name">Editor Drag & Drop</span>
+        <span class="nav-check"></span>
+      </div>
+      <div class="nav-item" data-target="s6" onclick="goTo('s6')">
+        <span class="nav-step-num">06</span>
+        <span class="nav-step-name">Simpan & Load Proyek</span>
+        <span class="nav-check"></span>
+      </div>
+      <div class="nav-item" data-target="s7" onclick="goTo('s7')">
+        <span class="nav-step-num">07</span>
+        <span class="nav-step-name">Export ke HTML</span>
+        <span class="nav-check"></span>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">Finalisasi</div>
+      <div class="nav-item" data-target="s8" onclick="goTo('s8')">
+        <span class="nav-step-num">08</span>
+        <span class="nav-step-name">Build File APK</span>
+        <span class="nav-check"></span>
+      </div>
+      <div class="nav-item" data-target="s9" onclick="goTo('s9')">
+        <span class="nav-step-num">09</span>
+        <span class="nav-step-name">Testing & Distribusi</span>
+        <span class="nav-check"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- THEME TOGGLE -->
+  <div class="theme-toggle" onclick="toggleTheme()" id="theme-toggle-btn">
+    <span class="toggle-icon" id="theme-icon">☀️</span>
+    <div class="toggle-track" id="toggle-track"><div class="toggle-thumb"></div></div>
+    <span class="toggle-label" id="toggle-label">LIGHT MODE</span>
+  </div>
+  <div class="sidebar-footer">
+    <div class="author-card">
+      <div class="author-avatar">👩‍💻</div>
+      <div>
+        <div class="author-name">Study with Lisa</div>
+        <div class="author-role">WebCraft Academy · 2026</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg-text">BUILD</div>
+  <div style="font-family:var(--mono);font-size:0.7rem;color:var(--lime);letter-spacing:0.15em;font-weight:700;margin-bottom:0.5rem;opacity:0.85">✦ STUDY WITH LISA ✦</div>
+  <div class="hero-eyebrow"><span class="dot"></span> PANDUAN LENGKAP DARI NOL · 2026</div>
+  <h1 class="hero-title">
+    Buat <span class="accent">APK Android</span><br>
+    <span class="line2">Website Builder</span><br>
+    Sendiri
+  </h1>
+  <p class="hero-desc">
+    Tutorial step-by-step yang benar-benar lengkap — dari install tools hingga APK siap dipakai. Tidak perlu pengalaman coding sebelumnya. Ikuti setiap langkah, dan kamu akan punya aplikasi Android nyata di tanganmu.
+  </p>
+  <div class="hero-meta">
+    <div class="meta-pill"><span class="icon">📚</span><strong>10</strong>&nbsp;Langkah</div>
+    <div class="meta-pill"><span class="icon">⏱</span><strong>~5–6</strong>&nbsp;Jam</div>
+    <div class="meta-pill"><span class="icon">🆓</span><strong>100%</strong>&nbsp;Gratis</div>
+    <div class="meta-pill"><span class="icon">📱</span>Hasil:&nbsp;<strong>.APK</strong></div>
+    <div class="meta-pill"><span class="icon">🎯</span>Level:&nbsp;<strong>Pemula</strong></div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content-wrap">
+
+<!-- ==================== STEP 0 ==================== -->
+<section class="step-block" id="s0">
+  <div class="step-label">
+    <div class="step-num-badge num-lime">00</div>
+    <div class="step-heading">
+      <h2>Apa yang Akan Kita Buat?</h2>
+      <div class="step-tag">GAMBARAN BESAR</div>
+    </div>
+  </div>
+  <div class="step-divider"></div>
+
+  <div class="glass-card">
+    <div class="card-title">🚀 Produk Akhir: Aplikasi WebCraft</div>
+    <div class="card-body">
+      Kita akan membangun sebuah <strong>aplikasi Android (.APK)</strong> bernama <strong>WebCraft</strong> — sebuah <em>website builder</em> berbasis mobile. Pengguna bisa membuat halaman web hanya dengan menekan tombol, memilih komponen, mengatur tampilan, lalu mengekspornya sebagai file HTML yang langsung bisa diunggah ke hosting.
+    </div>
+  </div>
+
+  <div class="grid-3">
+    <div class="tool-tile">
+      <div class="tool-emoji">🎨</div>
+      <div class="tool-name">Visual Editor</div>
+      <div class="tool-desc">Tambah & susun elemen website secara visual</div>
+    </div>
+    <div class="tool-tile">
+      <div class="tool-emoji">📦</div>
+      <div class="tool-name">Template Siap</div>
+      <div class="tool-desc">Landing page, portofolio, blog — tinggal pilih</div>
+    </div>
+    <div class="tool-tile">
+      <div class="tool-emoji">⬇️</div>
+      <div class="tool-name">Export HTML</div>
+      <div class="tool-desc">Hasilkan file HTML/CSS bersih siap upload</div>
+    </div>
+    <div class="tool-tile">
+      <div class="tool-emoji">💾</div>
+      <div class="tool-name">Simpan Proyek</div>
+      <div class="tool-desc">Proyek tersimpan di HP, bisa dilanjut kapan saja</div>
+    </div>
+    <div class="tool-tile">
+      <div class="tool-emoji">👁️</div>
+      <div class="tool-name">Live Preview</div>
+      <div class="tool-desc">Lihat tampilan website real-time di dalam app</div>
+    </div>
+    <div class="tool-tile">
+      <div class="tool-emoji">🌗</div>
+      <div class="tool-name">Dark / Light Mode</div>
+      <div class="tool-desc">Pilihan tema tampilan aplikasi</div>
+    </div>
+  </div>
+
+  <div class="hl-card hl-lime">
+    <span class="hl-icon">💡</span>
+    <span><strong>Mengapa ini bermanfaat?</strong> Jutaan orang ingin punya website tapi tidak bisa coding. Aplikasi yang kamu buat ini akan membantu mereka membangun website sendiri dari HP — tanpa perlu buka laptop atau belajar HTML.</span>
+  </div>
+
+  <div class="glass-card">
+    <div class="card-title">📋 Apa yang Akan Kamu Pelajari</div>
+    <ul class="check-list" id="cl-learn">
+      <li class="check-item" onclick="tick(this)"><span class="check-box"><svg viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 5-5" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Cara setup environment pengembangan aplikasi mobile</li>
+      <li class="check-item" onclick="tick(this)"><span class="check-box"><svg viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 5-5" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Dasar-dasar React Native dan cara kerjanya</li>
+      <li class="check-item" onclick="tick(this)"><span class="check-box"><svg viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 5-5" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Membuat sistem navigasi antar halaman di aplikasi</li>
+      <li class="check-item" onclick="tick(this)"><span class="check-box"><svg viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 5-5" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Menyimpan dan membaca data dari penyimpanan lokal HP</li>
+      <li class="check-item" onclick="tick(this)"><span class="check-box"><svg viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 5-5" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Menghasilkan kode HTML dari data di dalam aplikasi</li>
+      <li class="check-item" onclick="tick(this)"><span class="check-box"><svg viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 5-5" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Membangun (build) APK dan cara mendistribusikannya</li>
+    </ul>
+  </div>
+
+  <!-- Mini Quiz -->
+  <div class="quiz-wrap">
+    <div class="quiz-q">🧠 Cek Pemahaman: Apa itu file .APK?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this, false)">A. File gambar khusus Android</button>
+      <button class="quiz-opt" onclick="answer(this, true)">B. File instalasi aplikasi Android (seperti .exe di Windows)</button>
+      <button class="quiz-opt" onclick="answer(this, false)">C. File konfigurasi jaringan</button>
+      <button class="quiz-opt" onclick="answer(this, false)">D. Singkatan dari "Apple Kit Package"</button>
+    </div>
+    <div class="quiz-result" id="qr0">✅ Benar! APK = Android Package Kit. Sama seperti .exe di Windows atau .dmg di Mac — ini adalah file yang kamu install untuk memasang aplikasi di Android.</div>
+  </div>
+</section>
+
+<div class="sec-divider"></div>
+
+<!-- ==================== STEP 1 ==================== -->
+<section class="step-block" id="s1">
+  <div class="step-label">
+    <div class="step-num-badge num-cyan">01</div>
+    <div class="step-heading">
+      <h2>Konsep & Arsitektur Aplikasi</h2>
+      <div class="step-tag">PERENCANAAN</div>
+    </div>
+  </div>
+  <div class="step-divider"></div>
+
+  <div class="glass-card">
+    <div class="card-title">🏗️ Teknologi yang Digunakan</div>
+    <div class="card-body">
+      Kita memilih <strong>React Native + Expo</strong> karena: satu kode untuk Android & iOS, gratis, bisa langsung test di HP tanpa build, komunitas besar, dan dokumentasi sangat lengkap. Cocok untuk pemula.
+    </div>
+  </div>
+
+  <div class="concept-box">
+    <div class="c-node">
+      <div class="cn-icon">⚛️</div>
+      <div class="cn-label">React Native</div>
+      <div class="cn-sub">Framework UI</div>
+    </div>
+    <div class="c-arrow">→</div>
+    <div class="c-node">
+      <div class="cn-icon">⚡</div>
+      <div class="cn-label">Expo</div>
+      <div class="cn-sub">Build & Test</div>
+    </div>
+    <div class="c-arrow">→</div>
+    <div class="c-node">
+      <div class="cn-icon">📱</div>
+      <div class="cn-label">EAS Build</div>
+      <div class="cn-sub">Cloud Build</div>
+    </div>
+    <div class="c-arrow">→</div>
+    <div class="c-node">
+      <div class="cn-icon">📦</div>
+      <div class="cn-label">File .APK</div>
+      <div class="cn-sub">Hasil akhir</div>
+    </div>
+  </div>
+
+  <h3 style="font-size:0.95rem;font-weight:800;color:#fff;margin:1.5rem 0 0.8rem;">📐 Alur Kerja Aplikasi</h3>
+
+  <div class="flow-steps">
+    <div class="flow-item">
+      <div class="flow-circle">1</div>
+      <div class="flow-content">
+        <div class="flow-title">User Buka Aplikasi → Halaman Home</div>
+        <div class="flow-desc">Menampilkan daftar proyek yang sudah dibuat + tombol buat proyek baru</div>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-circle">2</div>
+      <div class="flow-content">
+        <div class="flow-title">Pilih Template atau Mulai Kosong</div>
+        <div class="flow-desc">Template mengisi elemen awal otomatis, mulai kosong = kanvas bersih</div>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-circle">3</div>
+      <div class="flow-content">
+        <div class="flow-title">Masuk ke Editor — Tambah Elemen</div>
+        <div class="flow-desc">Toolbar berisi komponen: <code>Judul, Teks, Gambar, Tombol, Navbar, Footer</code></div>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-circle">4</div>
+      <div class="flow-content">
+        <div class="flow-title">Edit Properti Elemen yang Dipilih</div>
+        <div class="flow-desc">Klik elemen → muncul panel edit: ubah teks, warna, ukuran font, dll.</div>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-circle">5</div>
+      <div class="flow-content">
+        <div class="flow-title">Preview & Export ke HTML</div>
+        <div class="flow-desc">Lihat tampilan final → export → file HTML tersimpan di storage HP</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hl-card hl-amber">
+    <span class="hl-icon">⚠️</span>
+    <span><strong>Penting dipahami:</strong> React Native menggunakan <strong>JavaScript</strong> — bukan HTML/CSS untuk UI-nya. Tapi kita akan <em>menghasilkan</em> HTML/CSS sebagai output ekspor. Jadi kamu tetap perlu mengerti dasar JavaScript.</span>
+  </div>
+
+  <table class="feat-table">
+    <thead>
+      <tr>
+        <th>Fitur</th>
+        <th>Deskripsi</th>
+        <th>Kesulitan</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Navigasi antar halaman</td><td>Menggunakan React Navigation Stack</td><td><span class="badge b-yes">Mudah</span></td></tr>
+      <tr><td>Tambah elemen ke kanvas</td><td>State management dengan useState</td><td><span class="badge b-yes">Mudah</span></td></tr>
+      <tr><td>Edit properti elemen</td><td>Panel samping dengan input form</td><td><span class="badge b-opt">Sedang</span></td></tr>
+      <tr><td>Simpan proyek lokal</td><td>AsyncStorage untuk persistensi data</td><td><span class="badge b-opt">Sedang</span></td></tr>
+      <tr><td>Export ke HTML</td><td>Fungsi konversi state → string HTML</td><td><span class="badge b-opt">Sedang</span></td></tr>
+      <tr><td>Preview di WebView</td><td>Render HTML di dalam aplikasi</td><td><span class="badge b-opt">Sedang</span></td></tr>
+      <tr><td>Drag & reorder elemen</td><td>Library DraggableFlatList</td><td><span class="badge b-no">Lanjutan</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="sec-divider"></div>
+
+<!-- ==================== STEP 2 ==================== -->
+<section class="step-block" id="s2">
+  <div class="step-label">
+    <div class="step-num-badge num-amber">02</div>
+    <div class="step-heading">
+      <h2>Install Tools & Setup Komputer</h2>
+      <div class="step-tag">PERSIAPAN LINGKUNGAN</div>
+    </div>
+  </div>
+  <div class="step-divider"></div>
+
+  <div class="hl-card hl-lime">
+    <span class="hl-icon">✅</span>
+    <span>Semua tools di bawah ini <strong>100% GRATIS</strong>. Pastikan koneksi internet stabil saat mengunduh. Butuh RAM minimal <strong>8GB</strong> dan storage kosong <strong>5GB</strong>.</span>
+  </div>
+
+  <div class="grid-2">
+    <div class="tool-tile">
+      <span class="tool-badge-tag tb-free">WAJIB</span>
+      <div class="tool-emoji">🟢</div>
+      <div class="tool-name">Node.js v18+ (LTS)</div>
+      <div class="tool-desc">Download di <strong>nodejs.org</strong> — pilih versi LTS (Long Term Support)</div>
+    </div>
+    <div class="tool-tile">
+      <span class="tool-badge-tag tb-free">WAJIB</span>
+      <div class="tool-emoji">🔷</div>
+      <div class="tool-name">Visual Studio Code</div>
+      <div class="tool-desc">Editor kode gratis terbaik. Download di <strong>code.visualstudio.com</strong></div>
+    </div>
+    <div class="tool-tile">
+      <span class="tool-badge-tag tb-free">WAJIB</span>
+      <div class="tool-emoji">⚡</div>
+      <div class="tool-name">Expo CLI & EAS CLI</div>
+      <div class="tool-desc">Diinstall via npm setelah Node.js. Untuk develop & build APK</div>
+    </div>
+    <div class="tool-tile">
+      <span class="tool-badge-tag tb-free">WAJIB</span>
+      <div class="tool-emoji">📱</div>
+      <div class="tool-name">Expo Go (di HP Android)</div>
+      <div class="tool-desc">Install dari Play Store. Untuk test aplikasi langsung di HP</div>
+    </div>
+    <div class="tool-tile">
+      <span class="tool-badge-tag tb-req">UNTUK BUILD</span>
+      <div class="tool-emoji">☕</div>
+      <div class="tool-name">Java JDK 17</div>
+      <div class="tool-desc">Diperlukan saat build APK. Download di <strong>adoptium.net</strong></div>
+    </div>
+    <div class="tool-tile">
+      <span class="tool-badge-tag tb-req">AKUN GRATIS</span>
+      <div class="tool-emoji">🌐</div>
+      <div class="tool-name">Akun Expo (expo.dev)</div>
+      <div class="tool-desc">Daftar gratis di <strong>expo.dev</strong> untuk menggunakan layanan EAS Build</div>
+    </div>
+  </div>
+
+  <h3 style="font-size:0.95rem;font-weight:800;color:#fff;margin:1.5rem 0 0.8rem;">🔧 Langkah Install (Urut!)</h3>
+
+  <div class="phase-tabs">
+    <button class="phase-tab active" onclick="switchTab(this,'tab-win')">Windows</button>
+    <button class="phase-tab" onclick="switchTab(this,'tab-mac')">Mac / Linux</button>
+  </div>
+
+  <div id="tab-win" class="phase-panel active">
+    <div class="code-wrap">
+      <div class="code-topbar">
+        <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+        <span class="code-filename">Command Prompt (jalankan sebagai Administrator)</span>
+        <button class="code-copy" onclick="cp(this)">Salin</button>
+      </div>
+      <div class="code-pre"><span class="cm"># Langkah 1: Cek apakah Node sudah terinstall dengan benar</span>
+node <span class="op">--</span>version
+<span class="cm"># Output yang benar: v18.x.x atau lebih baru</span>
+
+npm <span class="op">--</span>version
+<span class="cm"># Output yang benar: 9.x.x atau lebih baru</span>
+
+<span class="cm"># Langkah 2: Install Expo CLI secara global di komputer</span>
+npm install <span class="op">-g</span> expo<span class="op">-</span>cli
+
+<span class="cm"># Langkah 3: Install EAS CLI (untuk build APK nanti)</span>
+npm install <span class="op">-g</span> eas<span class="op">-</span>cli
+
+<span class="cm"># Langkah 4: Verifikasi semua terinstall dengan benar</span>
+expo <span class="op">--</span>version   <span class="cm"># ✅ harus muncul nomor versi</span>
+eas <span class="op">--</span>version    <span class="cm"># ✅ harus muncul nomor versi</span>
+
+<span class="cm"># Langkah 5: Login ke akun Expo (daftar dulu di expo.dev)</span>
+eas login</div>
+    </div>
+  </div>
+
+  <div id="tab-mac" class="phase-panel">
+    <div class="code-wrap">
+      <div class="code-topbar">
+        <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+        <span class="code-filename">Terminal</span>
+        <button class="code-copy" onclick="cp(this)">Salin</button>
+      </div>
+      <div class="code-pre"><span class="cm"># Jika belum ada Homebrew, install dulu:</span>
+/bin/bash <span class="op">-c</span> <span class="str">"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</span>
+
+<span class="cm"># Install Node.js via Homebrew</span>
+brew install node
+
+<span class="cm"># Verifikasi</span>
+node <span class="op">--</span>version   <span class="cm"># v18.x.x atau lebih baru</span>
+npm <span class="op">--</span>version    <span class="cm"># 9.x.x atau lebih baru</span>
+
+<span class="cm"># Install Expo & EAS CLI</span>
+npm install <span class="op">-g</span> expo<span class="op">-</span>cli eas<span class="op">-</span>cli
+
+<span class="cm"># Jika error permission, gunakan:</span>
+sudo npm install <span class="op">-g</span> expo<span class="op">-</span>cli eas<span class="op">-</span>cli
+
+<span class="cm"># Login ke Expo</span>
+eas login</div>
+    </div>
+  </div>
+
+  <div class="hl-card hl-rose">
+    <span class="hl-icon">🚨</span>
+    <span><strong>Error umum:</strong> Jika muncul <code class="ic">EACCES permission denied</code> — di Windows jalankan Command Prompt sebagai Administrator. Di Mac/Linux tambahkan <code class="ic">sudo</code> di depan perintah.</span>
+  </div>
+</section>
+
+<div class="sec-divider"></div>
+
+<!-- ==================== STEP 3 ==================== -->
+<section class="step-block" id="s3">
+  <div class="step-label">
+    <div class="step-num-badge num-violet">03</div>
+    <div class="step-heading">
+      <h2>Inisialisasi Proyek Baru</h2>
+      <div class="step-tag">MEMULAI KODING</div>
+    </div>
+  </div>
+  <div class="step-divider"></div>
+
+  <div class="code-wrap">
+    <div class="code-topbar">
+      <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+      <span class="code-filename">Terminal — Buat Proyek Baru</span>
+      <button class="code-copy" onclick="cp(this)">Salin</button>
+    </div>
+    <div class="code-pre"><span class="cm"># Buat proyek React Native baru dengan nama "WebCraft"</span>
+npx create<span class="op">-</span>expo<span class="op">-</span>app WebCraft <span class="op">--</span>template blank
+
+<span class="cm"># Masuk ke folder proyek</span>
+cd WebCraft
+
+<span class="cm"># Install semua library yang kita butuhkan sekaligus</span>
+npm install @react<span class="op">-</span>navigation/native \
+            @react<span class="op">-</span>navigation/stack \
+            react<span class="op">-</span>native<span class="op">-</span>screens \
+            react<span class="op">-</span>native<span class="op">-</span>safe<span class="op">-</span>area<span class="op">-</span>context \
+            react<span class="op">-</span>native<span class="op">-</span>gesture<span class="op">-</span>handler \
+            react<span class="op">-</span>native<span class="op">-</span>reanimated \
+            @react<span class="op">-</span>native<span class="op">-</span>async<span class="op">-</span>storage/async<span class="op">-</span>storage \
+            react<span class="op">-</span>native<span class="op">-</span>webview \
+            react<span class="op">-</span>native<span class="op">-</span>share
+
+<span class="cm"># Test — jalankan di Expo Go (scan QR dari HP)</span>
+npx expo start</div>
+  </div>
+
+  <h3 style="font-size:0.95rem;font-weight:800;color:#fff;margin:1.5rem 0 0.8rem;">📁 Buat Struktur Folder Ini</h3>
+
+  <div class="file-tree-wrap">
+    <div class="file-tree-header">📁 Struktur Proyek WebCraft/</div>
+    <div class="file-tree-body">
+<span class="ft-folder">WebCraft/</span>
+├── <span class="ft-folder">src/</span>
+│   ├── <span class="ft-folder">screens/</span>                    <span class="ft-comment">← Semua halaman aplikasi</span>
+│   │   ├── <span class="ft-ext-js">HomeScreen.js</span>           <span class="ft-comment">← Dashboard & daftar proyek</span>
+│   │   ├── <span class="ft-ext-js">EditorScreen.js</span>         <span class="ft-comment">← Inti editor website builder</span>
+│   │   ├── <span class="ft-ext-js">TemplatesScreen.js</span>      <span class="ft-comment">← Pilihan template</span>
+│   │   ├── <span class="ft-ext-js">PreviewScreen.js</span>        <span class="ft-comment">← Preview hasil website</span>
+│   │   └── <span class="ft-ext-js">SettingsScreen.js</span>       <span class="ft-comment">← Pengaturan app</span>
+│   ├── <span class="ft-folder">components/</span>                 <span class="ft-comment">← Komponen reusable</span>
+│   │   ├── <span class="ft-ext-js">ToolBar.js</span>              <span class="ft-comment">← Bar pilihan komponen website</span>
+│   │   ├── <span class="ft-ext-js">ElementBlock.js</span>         <span class="ft-comment">← Blok elemen di kanvas</span>
+│   │   ├── <span class="ft-ext-js">PropertiesPanel.js</span>      <span class="ft-comment">← Panel edit properti</span>
+│   │   └── <span class="ft-ext-js">ProjectCard.js</span>          <span class="ft-comment">← Kartu proyek di Home</span>
+│   ├── <span class="ft-folder">utils/</span>                      <span class="ft-comment">← Fungsi bantuan</span>
+│   │   ├── <span class="ft-ext-js">htmlExporter.js</span>         <span class="ft-comment">← Konversi state → HTML</span>
+│   │   ├── <span class="ft-ext-js">storage.js</span>              <span class="ft-comment">← Simpan & load proyek</span>
+│   │   └── <span class="ft-ext-js">helpers.js</span>              <span class="ft-comment">← Fungsi umum</span>
+│   ├── <span class="ft-folder">templates/</span>                  <span class="ft-comment">← Data template siap pakai</span>
+│   │   ├── <span class="ft-ext-js">landingPage.js</span>
+│   │   ├── <span class="ft-ext-js">portfolio.js</span>
+│   │   └── <span class="ft-ext-js">blogPage.js</span>
+│   └── <span class="ft-folder">constants/</span>
+│       └── <span class="ft-ext-js">theme.js</span>               <span class="ft-comment">← Warna & font global</span>
+├── <span class="ft-ext-js">App.js</span>                          <span class="ft-comment">← Entry point (pintu masuk utama)</span>
+├── <span class="ft-ext-json">app.json</span>                        <span class="ft-comment">← Konfigurasi nama & icon app</span>
+├── <span class="ft-ext-json">eas.json</span>                        <span class="ft-comment">← Konfigurasi build APK</span>
+└── <span class="ft-ext-md">README.md</span>                       <span class="ft-comment">← Dokumentasi proyekmu</span>
+    </div>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-topbar">
+      <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+      <span class="code-filename">Terminal — Buat Folder Struktur Otomatis</span>
+      <button class="code-copy" onclick="cp(this)">Salin</button>
+    </div>
+    <div class="code-pre"><span class="cm"># Jalankan perintah ini dari dalam folder WebCraft/</span>
+mkdir <span class="op">-p</span> src/screens src/components src/utils src/templates src/constants
+
+<span class="cm"># Buat file kosong untuk semua screen</span>
+touch src/screens/HomeScreen.js
+touch src/screens/EditorScreen.js
+touch src/screens/TemplatesScreen.js
+touch src/screens/PreviewScreen.js
+touch src/screens/SettingsScreen.js
+
+<span class="cm"># Buat file utilitas</span>
+touch src/utils/htmlExporter.js
+touch src/utils/storage.js
+touch src/utils/helpers.js
+touch src/constants/theme.js</div>
+  </div>
+</section>
+
+<div class="sec-divider"></div>
+
+<!-- ==================== STEP 4 ==================== -->
+<section class="step-block" id="s4">
+  <div class="step-label">
+    <div class="step-num-badge num-lime">04</div>
+    <div class="step-heading">
+      <h2>Navigasi & Semua Halaman</h2>
+      <div class="step-tag">KODING HALAMAN UTAMA</div>
+    </div>
+  </div>
+  <div class="step-divider"></div>
+
+  <div class="hl-card hl-cyan">
+    <span class="hl-icon">ℹ️</span>
+    <span>Di React Native, perpindahan antar halaman disebut <strong>"navigasi"</strong>. Kita gunakan library <code class="ic">@react-navigation/stack</code> yang bekerja seperti tumpukan kartu — setiap halaman baru ditaruh di atas tumpukan, tombol kembali menghapus kartu paling atas.</span>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-topbar">
+      <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+      <span class="code-filename">App.js — Setup Navigasi Utama</span>
+      <button class="code-copy" onclick="cp(this)">Salin</button>
+    </div>
+    <div class="code-pre"><span class="kw">import</span> React <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { NavigationContainer } <span class="kw">from</span> <span class="str">'@react-navigation/native'</span>;
+<span class="kw">import</span> { createStackNavigator } <span class="kw">from</span> <span class="str">'@react-navigation/stack'</span>;
+<span class="kw">import</span> { GestureHandlerRootView } <span class="kw">from</span> <span class="str">'react-native-gesture-handler'</span>;
+
+<span class="cm">// Import semua halaman yang akan kita buat</span>
+<span class="kw">import</span> HomeScreen <span class="kw">from</span> <span class="str">'./src/screens/HomeScreen'</span>;
+<span class="kw">import</span> EditorScreen <span class="kw">from</span> <span class="str">'./src/screens/EditorScreen'</span>;
+<span class="kw">import</span> TemplatesScreen <span class="kw">from</span> <span class="str">'./src/screens/TemplatesScreen'</span>;
+<span class="kw">import</span> PreviewScreen <span class="kw">from</span> <span class="str">'./src/screens/PreviewScreen'</span>;
+
+<span class="kw">const</span> Stack = <span class="fn">createStackNavigator</span>();
+
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">return</span> (
+    <span class="cm">{/* GestureHandlerRootView diperlukan agar gesture/drag berfungsi */}</span>
+    <span class="tag">&lt;GestureHandlerRootView</span> <span class="attr">style</span>={{ flex: <span class="num">1</span> }}<span class="tag">&gt;</span>
+      <span class="tag">&lt;NavigationContainer&gt;</span>
+        <span class="tag">&lt;Stack.Navigator</span>
+          <span class="attr">initialRouteName</span>=<span class="str">"Home"</span>
+          <span class="attr">screenOptions</span>={{
+            headerShown: <span class="kw">false</span>,         <span class="cm">// Sembunyikan header bawaan</span>
+            cardStyleInterpolator: <span class="cm">/* animasi slide */</span>
+              ({ current }) =&gt; ({
+                cardStyle: { opacity: current.progress }
+              })
+          }}<span class="tag">&gt;</span>
+          <span class="tag">&lt;Stack.Screen</span> <span class="attr">name</span>=<span class="str">"Home"</span>      <span class="attr">component</span>={HomeScreen} <span class="tag">/&gt;</span>
+          <span class="tag">&lt;Stack.Screen</span> <span class="attr">name</span>=<span class="str">"Editor"</span>    <span class="attr">component</span>={EditorScreen} <span class="tag">/&gt;</span>
+          <span class="tag">&lt;Stack.Screen</span> <span class="attr">name</span>=<span class="str">"Templates"</span> <span class="attr">component</span>={TemplatesScreen} <span class="tag">/&gt;</span>
+          <span class="tag">&lt;Stack.Screen</span> <span class="attr">name</span>=<span class="str">"Preview"</span>  <span class="attr">component</span>={PreviewScreen} <span class="tag">/&gt;</span>
+        <span class="tag">&lt;/Stack.Navigator&gt;</span>
+      <span class="tag">&lt;/NavigationContainer&gt;</span>
+    <span class="tag">&lt;/GestureHandlerRootView&gt;</span>
+  );
+}</div>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-topbar">
+      <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+      <span class="code-filename">src/screens/HomeScreen.js — Halaman Utama</span>
+      <button class="code-copy" onclick="cp(this)">Salin</button>
+    </div>
+    <div class="code-pre"><span class="kw">import</span> React, { useState, useEffect, useCallback } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> {
+  View, Text, TouchableOpacity, ScrollView,
+  StyleSheet, StatusBar, Alert, RefreshControl
+} <span class="kw">from</span> <span class="str">'react-native'</span>;
+<span class="kw">import</span> { SafeAreaView } <span class="kw">from</span> <span class="str">'react-native-safe-area-context'</span>;
+<span class="kw">import</span> { loadAllProjects, deleteProject } <span class="kw">from</span> <span class="str">'../utils/storage'</span>;
+
+<span class="kw">export default function</span> <span class="fn">HomeScreen</span>({ navigation }) {
+  <span class="kw">const</span> [projects, setProjects] = <span class="fn">useState</span>([]);
+  <span class="kw">const</span> [refreshing, setRefreshing] = <span class="fn">useState</span>(<span class="kw">false</span>);
+
+  <span class="cm">// Load proyek setiap kali halaman ini tampil (termasuk saat kembali dari editor)</span>
+  <span class="fn">useEffect</span>(() => {
+    <span class="kw">const</span> unsubscribe = navigation.<span class="fn">addListener</span>(<span class="str">'focus'</span>, () => {
+      <span class="fn">fetchProjects</span>();
+    });
+    <span class="kw">return</span> unsubscribe;
+  }, [navigation]);
+
+  <span class="kw">const</span> <span class="fn">fetchProjects</span> = <span class="kw">async</span> () => {
+    <span class="kw">const</span> data = <span class="kw">await</span> <span class="fn">loadAllProjects</span>();
+    <span class="fn">setProjects</span>(data);
+  };
+
+  <span class="kw">const</span> <span class="fn">onRefresh</span> = <span class="fn">useCallback</span>(<span class="kw">async</span> () => {
+    <span class="fn">setRefreshing</span>(<span class="kw">true</span>);
+    <span class="kw">await</span> <span class="fn">fetchProjects</span>();
+    <span class="fn">setRefreshing</span>(<span class="kw">false</span>);
+  }, []);
+
+  <span class="kw">const</span> <span class="fn">handleDelete</span> = (projectId, projectName) => {
+    Alert.<span class="fn">alert</span>(
+      <span class="str">'Hapus Proyek'</span>,
+      <span class="str">`Yakin hapus "${projectName}"? Tidak bisa dibatalkan.`</span>,
+      [
+        { text: <span class="str">'Batal'</span>, style: <span class="str">'cancel'</span> },
+        { text: <span class="str">'Hapus'</span>, style: <span class="str">'destructive'</span>, onPress: <span class="kw">async</span> () => {
+          <span class="kw">await</span> <span class="fn">deleteProject</span>(projectId);
+          <span class="fn">fetchProjects</span>();
+        }}
+      ]
+    );
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;SafeAreaView</span> <span class="attr">style</span>={styles.container}<span class="tag">&gt;</span>
+      <span class="tag">&lt;StatusBar</span> <span class="attr">barStyle</span>=<span class="str">"light-content"</span> <span class="attr">backgroundColor</span>=<span class="str">"#05070d"</span> <span class="tag">/&gt;</span>
+
+      <span class="cm">{/* HEADER */}</span>
+      <span class="tag">&lt;View</span> <span class="attr">style</span>={styles.header}<span class="tag">&gt;</span>
+        <span class="tag">&lt;View&gt;</span>
+          <span class="tag">&lt;Text</span> <span class="attr">style</span>={styles.logo}<span class="tag">&gt;</span>⚡ WebCraft<span class="tag">&lt;/Text&gt;</span>
+          <span class="tag">&lt;Text</span> <span class="attr">style</span>={styles.subtitle}<span class="tag">&gt;</span>Buat website dari HP-mu<span class="tag">&lt;/Text&gt;</span>
+        <span class="tag">&lt;/View&gt;</span>
+      <span class="tag">&lt;/View&gt;</span>
+
+      <span class="cm">{/* TOMBOL AKSI */}</span>
+      <span class="tag">&lt;View</span> <span class="attr">style</span>={styles.actions}<span class="tag">&gt;</span>
+        <span class="tag">&lt;TouchableOpacity</span>
+          <span class="attr">style</span>={styles.btnPrimary}
+          <span class="attr">onPress</span>={() => navigation.<span class="fn">navigate</span>(<span class="str">'Editor'</span>, { isNew: <span class="kw">true</span> })}<span class="tag">&gt;</span>
+          <span class="tag">&lt;Text</span> <span class="attr">style</span>={styles.btnPrimaryText}<span class="tag">&gt;</span>+ Proyek Baru<span class="tag">&lt;/Text&gt;</span>
+        <span class="tag">&lt;/TouchableOpacity&gt;</span>
+        <span class="tag">&lt;TouchableOpacity</span>
+          <span class="attr">style</span>={styles.btnSecondary}
+          <span class="attr">onPress</span>={() => navigation.<span class="fn">navigate</span>(<span class="str">'Templates'</span>)}<span class="tag">&gt;</span>
+          <span class="tag">&lt;Text</span> <span class="attr">style</span>={styles.btnSecText}<span class="tag">&gt;</span>🎨 Template<span class="tag">&lt;/Text&gt;</span>
+        <span class="tag">&lt;/TouchableOpacity&gt;</span>
+      <span class="tag">&lt;/View&gt;</span>
+
+      <span class="cm">{/* DAFTAR PROYEK */}</span>
+      <span class="tag">&lt;Text</span> <span class="attr">style</span>={styles.sectionTitle}<span class="tag">&gt;</span>
+        Proyekku ({projects.length})
+      <span class="tag">&lt;/Text&gt;</span>
+
+      <span class="tag">&lt;ScrollView</span>
+        <span class="attr">style</span>={styles.list}
+        <span class="attr">refreshControl</span>={<span class="tag">&lt;RefreshControl</span> <span class="attr">refreshing</span>={refreshing} <span class="attr">onRefresh</span>={onRefresh} <span class="tag">/&gt;</span>}<span class="tag">&gt;</span>
+
+        {projects.<span class="fn">length</span> === <span class="num">0</span> ? (
+          <span class="tag">&lt;View</span> <span class="attr">style</span>={styles.empty}<span class="tag">&gt;</span>
+            <span class="tag">&lt;Text</span> <span class="attr">style</span>={styles.emptyIcon}<span class="tag">&gt;</span>🚀<span class="tag">&lt;/Text&gt;</span>
+            <span class="tag">&lt;Text</span> <span class="attr">style</span>={styles.emptyText}<span class="tag">&gt;</span>
+              Belum ada proyek. Buat yang pertama!
+            <span class="tag">&lt;/Text&gt;</span>
+          <span class="tag">&lt;/View&gt;</span>
+        ) : (
+          projects.<span class="fn">map</span>(project => (
+            <span class="tag">&lt;TouchableOpacity</span>
+              <span class="attr">key</span>={project.id}
+              <span class="attr">style</span>={styles.projectCard}
+              <span class="attr">onPress</span>={() => navigation.<span class="fn">navigate</span>(<span class="str">'Editor'</span>, { projectId: project.id })}
+              <span class="attr">onLongPress</span>={() => <span class="fn">handleDelete</span>(project.id, project.name)}<span class="tag">&gt;</span>
+              <span class="tag">&lt;View&gt;</span>
+                <span class="tag">&lt;Text</span> <span class="attr">style</span>={styles.cardName}<span class="tag">&gt;</span>{project.name}<span class="tag">&lt;/Text&gt;</span>
+                <span class="tag">&lt;Text</span> <span class="attr">style</span>={styles.cardMeta}<span class="tag">&gt;</span>
+                  {project.elementCount} elemen · {project.updatedAt}
+                <span class="tag">&lt;/Text&gt;</span>
+              <span class="tag">&lt;/View&gt;</span>
+              <span class="tag">&lt;Text</span> <span class="attr">style</span>={styles.cardArrow}<span class="tag">&gt;</span>→<span class="tag">&lt;/Text&gt;</span>
+            <span class="tag">&lt;/TouchableOpacity&gt;</span>
+          ))
+        )}
+      <span class="tag">&lt;/ScrollView&gt;</span>
+    <span class="tag">&lt;/SafeAreaView&gt;</span>
+  );
+}
+
+<span class="kw">const</span> styles = StyleSheet.<span class="fn">create</span>({
+  container: { flex: <span class="num">1</span>, backgroundColor: <span class="str">'#05070d'</span> },
+  header: { padding: <span class="num">20</span>, paddingBottom: <span class="num">12</span> },
+  logo: { fontSize: <span class="num">24</span>, fontWeight: <span class="str">'900'</span>, color: <span class="str">'#fff'</span> },
+  subtitle: { fontSize: <span class="num">13</span>, color: <span class="str">'#6b7a99'</span>, marginTop: <span class="num">2</span> },
+  actions: { flexDirection: <span class="str">'row'</span>, gap: <span class="num">10</span>, padding: <span class="num">20</span>, paddingTop: <span class="num">0</span> },
+  btnPrimary: {
+    flex: <span class="num">1</span>, backgroundColor: <span class="str">'#c8ff57'</span>,
+    padding: <span class="num">14</span>, borderRadius: <span class="num">12</span>, alignItems: <span class="str">'center'</span>
+  },
+  btnPrimaryText: { fontSize: <span class="num">15</span>, fontWeight: <span class="str">'800'</span>, color: <span class="str">'#000'</span> },
+  btnSecondary: {
+    flex: <span class="num">1</span>, backgroundColor: <span class="str">'#161b28'</span>,
+    padding: <span class="num">14</span>, borderRadius: <span class="num">12</span>, alignItems: <span class="str">'center'</span>,
+    borderWidth: <span class="num">1</span>, borderColor: <span class="str">'#232a3d'</span>
+  },
+  btnSecText: { fontSize: <span class="num">15</span>, fontWeight: <span class="str">'700'</span>, color: <span class="str">'#e2e8f5'</span> },
+  sectionTitle: { fontSize: <span class="num">13</span>, fontWeight: <span class="str">'700'</span>, color: <span class="str">'#6b7a99'</span>, padding: <span class="num">20</span>, paddingBottom: <span class="num">8</span> },
+  list: { flex: <span class="num">1</span>, paddingHorizontal: <span class="num">20</span> },
+  empty: { alignItems: <span class="str">'center'</span>, paddingTop: <span class="num">60</span> },
+  emptyIcon: { fontSize: <span class="num">48</span>, marginBottom: <span class="num">12</span> },
+  emptyText: { color: <span class="str">'#6b7a99'</span>, textAlign: <span class="str">'center'</span>, fontSize: <span class="num">14</span> },
+  projectCard: {
+    backgroundColor: <span class="str">'#161b28'</span>, borderRadius: <span class="num">14</span>,
+    padding: <span class="num">16</span>, marginBottom: <span class="num">10</span>,
+    flexDirection: <span class="str">'row'</span>, justifyContent: <span class="str">'space-between'</span>, alignItems: <span class="str">'center'</span>,
+    borderWidth: <span class="num">1</span>, borderColor: <span class="str">'#232a3d'</span>
+  },
+  cardName: { fontSize: <span class="num">15</span>, fontWeight: <span class="str">'700'</span>, color: <span class="str">'#fff'</span> },
+  cardMeta: { fontSize: <span class="num">12</span>, color: <span class="str">'#6b7a99'</span>, marginTop: <span class="num">3</span> },
+  cardArrow: { fontSize: <span class="num">18</span>, color: <span class="str">'#c8ff57'</span> },
+});</div>
+  </div>
+</section>
+
+<div class="sec-divider"></div>
+
+<!-- ==================== STEP 5 ==================== -->
+<section class="step-block" id="s5">
+  <div class="step-label">
+    <div class="step-num-badge num-rose">05</div>
+    <div class="step-heading">
+      <h2>Editor Drag & Drop</h2>
+      <div class="step-tag">INTI APLIKASI</div>
+    </div>
+  </div>
+  <div class="step-divider"></div>
+
+  <div class="glass-card">
+    <div class="card-title">🧩 Komponen yang Tersedia di Editor</div>
+    <div class="card-body">
+      Pengguna bisa menambahkan elemen-elemen ini ke kanvas: <strong>Heading (Judul), Paragraf, Tombol, Gambar, Navbar, Footer, Divider, Form Kontak,</strong> dan <strong>Quote.</strong> Setiap elemen bisa diedit dan diatur ulang urutannya.
+    </div>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-topbar">
+      <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+      <span class="code-filename">src/screens/EditorScreen.js — Editor Lengkap</span>
+      <button class="code-copy" onclick="cp(this)">Salin</button>
+    </div>
+    <div class="code-pre"><span class="kw">import</span> React, { useState, useCallback } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> {
+  View, Text, TouchableOpacity, ScrollView,
+  TextInput, StyleSheet, Alert, Modal
+} <span class="kw">from</span> <span class="str">'react-native'</span>;
+<span class="kw">import</span> { SafeAreaView } <span class="kw">from</span> <span class="str">'react-native-safe-area-context'</span>;
+<span class="kw">import</span> { saveProject } <span class="kw">from</span> <span class="str">'../utils/storage'</span>;
+
+<span class="cm">// Definisi semua komponen yang tersedia</span>
+<span class="kw">const</span> COMPONENTS = [
+  { id: <span class="str">'navbar'</span>,   icon: <span class="str">'≡'</span>,  label: <span class="str">'Navbar'</span>,   type: <span class="str">'navbar'</span>   },
+  { id: <span class="str">'heading'</span>,  icon: <span class="str">'H₁'</span>, label: <span class="str">'Judul'</span>,    type: <span class="str">'heading'</span>  },
+  { id: <span class="str">'paragraph'</span>,icon: <span class="str">'¶'</span>,  label: <span class="str">'Teks'</span>,     type: <span class="str">'paragraph'</span>},
+  { id: <span class="str">'button'</span>,   icon: <span class="str">'⬜'</span>, label: <span class="str">'Tombol'</span>,   type: <span class="str">'button'</span>   },
+  { id: <span class="str">'image'</span>,    icon: <span class="str">'🖼'</span>,  label: <span class="str">'Gambar'</span>,   type: <span class="str">'image'</span>    },
+  { id: <span class="str">'divider'</span>,  icon: <span class="str">'─'</span>,  label: <span class="str">'Garis'</span>,    type: <span class="str">'divider'</span>  },
+  { id: <span class="str">'quote'</span>,    icon: <span class="str">'❝'</span>,  label: <span class="str">'Kutipan'</span>,  type: <span class="str">'quote'</span>    },
+  { id: <span class="str">'footer'</span>,   icon: <span class="str">'░'</span>,  label: <span class="str">'Footer'</span>,   type: <span class="str">'footer'</span>   },
+];
+
+<span class="cm">// Konten default setiap tipe elemen</span>
+<span class="kw">const</span> <span class="fn">defaultContent</span> = (type) => ({
+  navbar:    <span class="str">'Brand | Home | Tentang | Kontak'</span>,
+  heading:   <span class="str">'Judul Utama Website Kamu'</span>,
+  paragraph: <span class="str">'Tulis deskripsi atau konten teksmu di sini. Klik untuk mengedit.'</span>,
+  button:    <span class="str">'Hubungi Kami'</span>,
+  image:     <span class="str">'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800'</span>,
+  divider:   <span class="str">''</span>,
+  quote:     <span class="str">'Mimpi besar, kerja keras, hasil nyata.'</span>,
+  footer:    <span class="str">'© 2026 Website Kamu. Dibuat dengan ❤️'</span>,
+})[type] || <span class="str">''</span>;
+
+<span class="kw">export default function</span> <span class="fn">EditorScreen</span>({ navigation, route }) {
+  <span class="kw">const</span> [elements, setElements] = <span class="fn">useState</span>([]);
+  <span class="kw">const</span> [selected, setSelected] = <span class="fn">useState</span>(<span class="kw">null</span>);
+  <span class="kw">const</span> [editModal, setEditModal] = <span class="fn">useState</span>(<span class="kw">false</span>);
+  <span class="kw">const</span> [editText, setEditText] = <span class="fn">useState</span>(<span class="str">''</span>);
+  <span class="kw">const</span> [projectName, setProjectName] = <span class="fn">useState</span>(<span class="str">'Proyek Tanpa Nama'</span>);
+  <span class="kw">const</span> [saving, setSaving] = <span class="fn">useState</span>(<span class="kw">false</span>);
+
+  <span class="cm">// Tambah elemen baru ke kanvas</span>
+  <span class="kw">const</span> <span class="fn">addElement</span> = (comp) => {
+    <span class="kw">const</span> newEl = {
+      id: `el_${Date.<span class="fn">now</span>()}_${Math.<span class="fn">random</span>().<span class="fn">toString</span>(<span class="num">36</span>).<span class="fn">substr</span>(<span class="num">2</span>, <span class="num">5</span>)}`,
+      type: comp.type,
+      content: <span class="fn">defaultContent</span>(comp.type),
+      style: {
+        color: <span class="str">'#000000'</span>,
+        backgroundColor: <span class="str">'transparent'</span>,
+        fontSize: comp.type === <span class="str">'heading'</span> ? <span class="num">28</span> : <span class="num">16</span>,
+        textAlign: <span class="str">'left'</span>,
+        fontWeight: comp.type === <span class="str">'heading'</span> ? <span class="str">'bold'</span> : <span class="str">'normal'</span>,
+      }
+    };
+    <span class="fn">setElements</span>(prev => [...prev, newEl]);
+  };
+
+  <span class="cm">// Pilih elemen untuk diedit</span>
+  <span class="kw">const</span> <span class="fn">selectElement</span> = (el) => {
+    <span class="fn">setSelected</span>(el.id);
+    <span class="fn">setEditText</span>(el.content);
+    <span class="fn">setEditModal</span>(<span class="kw">true</span>);
+  };
+
+  <span class="cm">// Simpan perubahan teks elemen</span>
+  <span class="kw">const</span> <span class="fn">saveEdit</span> = () => {
+    <span class="fn">setElements</span>(prev => prev.<span class="fn">map</span>(el =>
+      el.id === selected ? { ...el, content: editText } : el
+    ));
+    <span class="fn">setEditModal</span>(<span class="kw">false</span>);
+  };
+
+  <span class="cm">// Hapus elemen dari kanvas</span>
+  <span class="kw">const</span> <span class="fn">removeElement</span> = (id) => {
+    Alert.<span class="fn">alert</span>(<span class="str">'Hapus Elemen'</span>, <span class="str">'Yakin ingin menghapus elemen ini?'</span>, [
+      { text: <span class="str">'Batal'</span>, style: <span class="str">'cancel'</span> },
+      { text: <span class="str">'Hapus'</span>, style: <span class="str">'destructive'</span>,
+        onPress: () => <span class="fn">setElements</span>(prev => prev.<span class="fn">filter</span>(el => el.id !== id)) }
+    ]);
+  };
+
+  <span class="cm">// Pindahkan elemen ke atas/bawah</span>
+  <span class="kw">const</span> <span class="fn">moveElement</span> = (id, direction) => {
+    <span class="fn">setElements</span>(prev => {
+      <span class="kw">const</span> idx = prev.<span class="fn">findIndex</span>(el => el.id === id);
+      <span class="kw">const</span> newArr = [...prev];
+      <span class="kw">const</span> swapIdx = direction === <span class="str">'up'</span> ? idx - <span class="num">1</span> : idx + <span class="num">1</span>;
+      <span class="kw">if</span> (swapIdx < <span class="num">0</span> || swapIdx >= newArr.length) <span class="kw">return</span> prev;
+      [newArr[idx], newArr[swapIdx]] = [newArr[swapIdx], newArr[idx]];
+      <span class="kw">return</span> newArr;
+    });
+  };
+
+  <span class="cm">// Simpan proyek ke storage</span>
+  <span class="kw">const</span> <span class="fn">handleSave</span> = <span class="kw">async</span> () => {
+    <span class="fn">setSaving</span>(<span class="kw">true</span>);
+    <span class="kw">await</span> <span class="fn">saveProject</span>({
+      id: route.params?.projectId || <span class="str">`proj_${Date.now()}`</span>,
+      name: projectName,
+      elements,
+      elementCount: elements.length,
+      updatedAt: <span class="kw">new</span> <span class="fn">Date</span>().<span class="fn">toLocaleDateString</span>(<span class="str">'id-ID'</span>)
+    });
+    <span class="fn">setSaving</span>(<span class="kw">false</span>);
+    Alert.<span class="fn">alert</span>(<span class="str">'✅ Tersimpan!'</span>, <span class="str">'Proyek berhasil disimpan.'</span>);
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;SafeAreaView</span> <span class="attr">style</span>={{ flex: <span class="num">1</span>, backgroundColor: <span class="str">'#05070d'</span> }}<span class="tag">&gt;</span>
+
+      <span class="cm">{/* TOP BAR */}</span>
+      <span class="tag">&lt;View</span> <span class="attr">style</span>={edStyles.topBar}<span class="tag">&gt;</span>
+        <span class="tag">&lt;TouchableOpacity</span> <span class="attr">onPress</span>={() => navigation.<span class="fn">goBack</span>()}<span class="tag">&gt;</span>
+          <span class="tag">&lt;Text</span> <span class="attr">style</span>={edStyles.backBtn}<span class="tag">&gt;</span>←<span class="tag">&lt;/Text&gt;</span>
+        <span class="tag">&lt;/TouchableOpacity&gt;</span>
+        <span class="tag">&lt;TextInput</span>
+          <span class="attr">style</span>={edStyles.projectNameInput}
+          <span class="attr">value</span>={projectName}
+          <span class="attr">onChangeText</span>={setProjectName}
+          <span class="attr">placeholder</span>=<span class="str">"Nama proyek..."</span>
+          <span class="attr">placeholderTextColor</span>=<span class="str">"#4a566e"</span> <span class="tag">/&gt;</span>
+        <span class="tag">&lt;View</span> <span class="attr">style</span>={{ flexDirection: <span class="str">'row'</span>, gap: <span class="num">8</span> }}<span class="tag">&gt;</span>
+          <span class="tag">&lt;TouchableOpacity</span>
+            <span class="attr">style</span>={edStyles.btnSave}
+            <span class="attr">onPress</span>={handleSave}<span class="tag">&gt;</span>
+            <span class="tag">&lt;Text</span> <span class="attr">style</span>={edStyles.btnSaveText}<span class="tag">&gt;</span>{saving ? <span class="str">'...'</span> : <span class="str">'Simpan'</span>}<span class="tag">&lt;/Text&gt;</span>
+          <span class="tag">&lt;/TouchableOpacity&gt;</span>
+          <span class="tag">&lt;TouchableOpacity</span>
+            <span class="attr">style</span>={edStyles.btnPreview}
+            <span class="attr">onPress</span>={() => navigation.<span class="fn">navigate</span>(<span class="str">'Preview'</span>, { elements })}<span class="tag">&gt;</span>
+            <span class="tag">&lt;Text</span> <span class="attr">style</span>={edStyles.btnPreviewText}<span class="tag">&gt;</span>▶<span class="tag">&lt;/Text&gt;</span>
+          <span class="tag">&lt;/TouchableOpacity&gt;</span>
+        <span class="tag">&lt;/View&gt;</span>
+      <span class="tag">&lt;/View&gt;</span>
+
+      <span class="cm">{/* TOOLBAR KOMPONEN */}</span>
+      <span class="tag">&lt;ScrollView</span> <span class="attr">horizontal</span> <span class="attr">showsHorizontalScrollIndicator</span>={<span class="kw">false</span>}
+        <span class="attr">style</span>={edStyles.toolbar}<span class="tag">&gt;</span>
+        {COMPONENTS.<span class="fn">map</span>(comp => (
+          <span class="tag">&lt;TouchableOpacity</span>
+            <span class="attr">key</span>={comp.id}
+            <span class="attr">style</span>={edStyles.toolItem}
+            <span class="attr">onPress</span>={() => <span class="fn">addElement</span>(comp)}<span class="tag">&gt;</span>
+            <span class="tag">&lt;Text</span> <span class="attr">style</span>={edStyles.toolIcon}<span class="tag">&gt;</span>{comp.icon}<span class="tag">&lt;/Text&gt;</span>
+            <span class="tag">&lt;Text</span> <span class="attr">style</span>={edStyles.toolLabel}<span class="tag">&gt;</span>{comp.label}<span class="tag">&lt;/Text&gt;</span>
+          <span class="tag">&lt;/TouchableOpacity&gt;</span>
+        ))}
+      <span class="tag">&lt;/ScrollView&gt;</span>
+
+      <span class="cm">{/* KANVAS EDITOR */}</span>
+      <span class="tag">&lt;ScrollView</span> <span class="attr">style</span>={edStyles.canvas}<span class="tag">&gt;</span>
+        {elements.<span class="fn">length</span> === <span class="num">0</span> && (
+          <span class="tag">&lt;View</span> <span class="attr">style</span>={edStyles.emptyCanvas}<span class="tag">&gt;</span>
+            <span class="tag">&lt;Text</span> <span class="attr">style</span>={edStyles.emptyIcon}<span class="tag">&gt;</span>🎨<span class="tag">&lt;/Text&gt;</span>
+            <span class="tag">&lt;Text</span> <span class="attr">style</span>={edStyles.emptyText}<span class="tag">&gt;</span>
+              Tap elemen di toolbar{<span class="str">'\n'</span>}untuk mulai membangun website
+            <span class="tag">&lt;/Text&gt;</span>
+          <span class="tag">&lt;/View&gt;</span>
+        )}
+        {elements.<span class="fn">map</span>((el, idx) => (
+          <span class="tag">&lt;View</span> <span class="attr">key</span>={el.id} <span class="attr">style</span>={edStyles.elementRow}<span class="tag">&gt;</span>
+            <span class="cm">{/* Tombol pindah atas/bawah */}</span>
+            <span class="tag">&lt;View</span> <span class="attr">style</span>={edStyles.moveButtons}<span class="tag">&gt;</span>
+              <span class="tag">&lt;TouchableOpacity</span> <span class="attr">onPress</span>={() => <span class="fn">moveElement</span>(el.id, <span class="str">'up'</span>)}
+                <span class="attr">disabled</span>={idx === <span class="num">0</span>}<span class="tag">&gt;</span>
+                <span class="tag">&lt;Text</span> <span class="attr">style</span>={[edStyles.moveBtn, idx===<span class="num">0</span> && edStyles.moveBtnDisabled]}<span class="tag">&gt;</span>↑<span class="tag">&lt;/Text&gt;</span>
+              <span class="tag">&lt;/TouchableOpacity&gt;</span>
+              <span class="tag">&lt;TouchableOpacity</span> <span class="attr">onPress</span>={() => <span class="fn">moveElement</span>(el.id, <span class="str">'down'</span>)}
+                <span class="attr">disabled</span>={idx === elements.length - <span class="num">1</span>}<span class="tag">&gt;</span>
+                <span class="tag">&lt;Text</span> <span class="attr">style</span>={edStyles.moveBtn}<span class="tag">&gt;</span>↓<span class="tag">&lt;/Text&gt;</span>
+              <span class="tag">&lt;/TouchableOpacity&gt;</span>
+            <span class="tag">&lt;/View&gt;</span>
+
+            <span class="cm">{/* Elemen yang bisa diedit */}</span>
+            <span class="tag">&lt;TouchableOpacity</span>
+              <span class="attr">style</span>={edStyles.elementBlock}
+              <span class="attr">onPress</span>={() => <span class="fn">selectElement</span>(el)}<span class="tag">&gt;</span>
+              <span class="tag">&lt;Text</span> <span class="attr">style</span>={edStyles.elementType}<span class="tag">&gt;</span>{el.type.toUpperCase()}<span class="tag">&lt;/Text&gt;</span>
+              <span class="tag">&lt;Text</span> <span class="attr">style</span>={edStyles.elementContent}<span class="attr">numberOfLines</span>={<span class="num">2</span>}<span class="tag">&gt;</span>
+                {el.content || <span class="str">'(kosong)'</span>}
+              <span class="tag">&lt;/Text&gt;</span>
+            <span class="tag">&lt;/TouchableOpacity&gt;</span>
+
+            <span class="cm">{/* Tombol hapus */}</span>
+            <span class="tag">&lt;TouchableOpacity</span> <span class="attr">onPress</span>={() => <span class="fn">removeElement</span>(el.id)}
+              <span class="attr">style</span>={edStyles.deleteBtn}<span class="tag">&gt;</span>
+              <span class="tag">&lt;Text</span> <span class="attr">style</span>={edStyles.deleteBtnText}<span class="tag">&gt;</span>✕<span class="tag">&lt;/Text&gt;</span>
+            <span class="tag">&lt;/TouchableOpacity&gt;</span>
+          <span class="tag">&lt;/View&gt;</span>
+        ))}
+        <span class="tag">&lt;View</span> <span class="attr">style</span>={{ height: <span class="num">80</span> }} <span class="tag">/&gt;</span>
+      <span class="tag">&lt;/ScrollView&gt;</span>
+
+      <span class="cm">{/* MODAL EDIT ELEMEN */}</span>
+      <span class="tag">&lt;Modal</span> <span class="attr">visible</span>={editModal} <span class="attr">animationType</span>=<span class="str">"slide"</span> <span class="attr">transparent</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;View</span> <span class="attr">style</span>={edStyles.modalOverlay}<span class="tag">&gt;</span>
+          <span class="tag">&lt;View</span> <span class="attr">style</span>={edStyles.modalBox}<span class="tag">&gt;</span>
+            <span class="tag">&lt;Text</span> <span class="attr">style</span>={edStyles.modalTitle}<span class="tag">&gt;</span>✏️ Edit Konten<span class="tag">&lt;/Text&gt;</span>
+            <span class="tag">&lt;TextInput</span>
+              <span class="attr">style</span>={edStyles.modalInput}
+              <span class="attr">value</span>={editText}
+              <span class="attr">onChangeText</span>={setEditText}
+              <span class="attr">multiline</span>
+              <span class="attr">autoFocus</span>
+              <span class="attr">placeholderTextColor</span>=<span class="str">"#4a566e"</span> <span class="tag">/&gt;</span>
+            <span class="tag">&lt;View</span> <span class="attr">style</span>={edStyles.modalActions}<span class="tag">&gt;</span>
+              <span class="tag">&lt;TouchableOpacity</span> <span class="attr">style</span>={edStyles.modalCancel}
+                <span class="attr">onPress</span>={() => <span class="fn">setEditModal</span>(<span class="kw">false</span>)}<span class="tag">&gt;</span>
+                <span class="tag">&lt;Text</span> <span class="attr">style</span>={{ color: <span class="str">'#6b7a99'</span>, fontWeight: <span class="str">'700'</span> }}<span class="tag">&gt;</span>Batal<span class="tag">&lt;/Text&gt;</span>
+              <span class="tag">&lt;/TouchableOpacity&gt;</span>
+              <span class="tag">&lt;TouchableOpacity</span> <span class="attr">style</span>={edStyles.modalSave}
+                <span class="attr">onPress</span>={saveEdit}<span class="tag">&gt;</span>
+                <span class="tag">&lt;Text</span> <span class="attr">style</span>={{ color: <span class="str">'#000'</span>, fontWeight: <span class="str">'800'</span> }}<span class="tag">&gt;</span>Simpan<span class="tag">&lt;/Text&gt;</span>
+              <span class="tag">&lt;/TouchableOpacity&gt;</span>
+            <span class="tag">&lt;/View&gt;</span>
+          <span class="tag">&lt;/View&gt;</span>
+        <span class="tag">&lt;/View&gt;</span>
+      <span class="tag">&lt;/Modal&gt;</span>
+    <span class="tag">&lt;/SafeAreaView&gt;</span>
+  );
+}</div>
+  </div>
+</section>
+
+<div class="sec-divider"></div>
+
+<!-- ==================== STEP 6 ==================== -->
+<section class="step-block" id="s6">
+  <div class="step-label">
+    <div class="step-num-badge num-amber">06</div>
+    <div class="step-heading">
+      <h2>Simpan & Load Proyek</h2>
+      <div class="step-tag">PENYIMPANAN DATA</div>
+    </div>
+  </div>
+  <div class="step-divider"></div>
+
+  <div class="hl-card hl-cyan">
+    <span class="hl-icon">💾</span>
+    <span><strong>AsyncStorage</strong> adalah cara menyimpan data di HP seperti "notepad permanen" — data tetap ada meskipun aplikasi ditutup. Mirip seperti <code class="ic">localStorage</code> di web browser.</span>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-topbar">
+      <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+      <span class="code-filename">src/utils/storage.js — Semua Fungsi Penyimpanan</span>
+      <button class="code-copy" onclick="cp(this)">Salin</button>
+    </div>
+    <div class="code-pre"><span class="kw">import</span> AsyncStorage <span class="kw">from</span> <span class="str">'@react-native-async-storage/async-storage'</span>;
+
+<span class="kw">const</span> PROJECTS_KEY = <span class="str">'@webcraft_projects'</span>;
+
+<span class="cm">/**
+ * Simpan satu proyek (tambah baru atau update yang sudah ada)
+ */</span>
+<span class="kw">export const</span> <span class="fn">saveProject</span> = <span class="kw">async</span> (project) => {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> existing = <span class="kw">await</span> <span class="fn">loadAllProjects</span>();
+    <span class="kw">const</span> index = existing.<span class="fn">findIndex</span>(p => p.id === project.id);
+
+    <span class="kw">if</span> (index >= <span class="num">0</span>) {
+      existing[index] = project;   <span class="cm">// Update proyek yang sudah ada</span>
+    } <span class="kw">else</span> {
+      existing.<span class="fn">unshift</span>(project);  <span class="cm">// Tambah proyek baru di awal daftar</span>
+    }
+
+    <span class="kw">await</span> AsyncStorage.<span class="fn">setItem</span>(PROJECTS_KEY, JSON.<span class="fn">stringify</span>(existing));
+    <span class="kw">return true</span>;
+  } <span class="kw">catch</span> (error) {
+    console.<span class="fn">error</span>(<span class="str">'Error menyimpan proyek:'</span>, error);
+    <span class="kw">return false</span>;
+  }
+};
+
+<span class="cm">/**
+ * Load semua proyek
+ */</span>
+<span class="kw">export const</span> <span class="fn">loadAllProjects</span> = <span class="kw">async</span> () => {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> data = <span class="kw">await</span> AsyncStorage.<span class="fn">getItem</span>(PROJECTS_KEY);
+    <span class="kw">return</span> data ? JSON.<span class="fn">parse</span>(data) : [];
+  } <span class="kw">catch</span> (error) {
+    console.<span class="fn">error</span>(<span class="str">'Error loading proyek:'</span>, error);
+    <span class="kw">return</span> [];
+  }
+};
+
+<span class="cm">/**
+ * Load satu proyek berdasarkan ID
+ */</span>
+<span class="kw">export const</span> <span class="fn">loadProject</span> = <span class="kw">async</span> (projectId) => {
+  <span class="kw">const</span> projects = <span class="kw">await</span> <span class="fn">loadAllProjects</span>();
+  <span class="kw">return</span> projects.<span class="fn">find</span>(p => p.id === projectId) || <span class="kw">null</span>;
+};
+
+<span class="cm">/**
+ * Hapus proyek berdasarkan ID
+ */</span>
+<span class="kw">export const</span> <span class="fn">deleteProject</span> = <span class="kw">async</span> (projectId) => {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> projects = <span class="kw">await</span> <span class="fn">loadAllProjects</span>();
+    <span class="kw">const</span> filtered = projects.<span class="fn">filter</span>(p => p.id !== projectId);
+    <span class="kw">await</span> AsyncStorage.<span class="fn">setItem</span>(PROJECTS_KEY, JSON.<span class="fn">stringify</span>(filtered));
+    <span class="kw">return true</span>;
+  } <span class="kw">catch</span> (error) {
+    console.<span class="fn">error</span>(<span class="str">'Error hapus proyek:'</span>, error);
+    <span class="kw">return false</span>;
+  }
+};
+
+<span class="cm">/**
+ * Hapus semua proyek (reset total)
+ */</span>
+<span class="kw">export const</span> <span class="fn">clearAllProjects</span> = <span class="kw">async</span> () => {
+  <span class="kw">await</span> AsyncStorage.<span class="fn">removeItem</span>(PROJECTS_KEY);
+};</div>
+  </div>
+</section>
+
+<div class="sec-divider"></div>
+
+<!-- ==================== STEP 7 ==================== -->
+<section class="step-block" id="s7">
+  <div class="step-label">
+    <div class="step-num-badge num-lime">07</div>
+    <div class="step-heading">
+      <h2>Export ke File HTML</h2>
+      <div class="step-tag">FITUR UNGGULAN</div>
+    </div>
+  </div>
+  <div class="step-divider"></div>
+
+  <div class="code-wrap">
+    <div class="code-topbar">
+      <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+      <span class="code-filename">src/utils/htmlExporter.js — Konversi ke HTML Lengkap</span>
+      <button class="code-copy" onclick="cp(this)">Salin</button>
+    </div>
+    <div class="code-pre"><span class="cm">/**
+ * Mengonversi array elemen dari editor menjadi halaman HTML lengkap
+ * yang siap diunggah ke hosting manapun
+ */</span>
+<span class="kw">export function</span> <span class="fn">generateHTML</span>(elements, options = {}) {
+  <span class="kw">const</span> {
+    projectName = <span class="str">'Website Saya'</span>,
+    primaryColor = <span class="str">'#007bff'</span>,
+    fontFamily = <span class="str">'system-ui, sans-serif'</span>,
+    description = <span class="str">'Dibuat dengan WebCraft'</span>
+  } = options;
+
+  <span class="cm">// Render setiap elemen menjadi tag HTML</span>
+  <span class="kw">const</span> <span class="fn">renderElement</span> = (el) => {
+    <span class="kw">switch</span> (el.type) {
+      <span class="kw">case</span> <span class="str">'navbar'</span>:
+        <span class="kw">return</span> <span class="str">`
+&lt;nav class="wc-navbar"&gt;
+  &lt;div class="wc-container"&gt;
+    &lt;a href="#" class="wc-brand"&gt;${projectName}&lt;/a&gt;
+    &lt;div class="wc-nav-links"&gt;
+      &lt;a href="#"&gt;Home&lt;/a&gt;
+      &lt;a href="#"&gt;Tentang&lt;/a&gt;
+      &lt;a href="#"&gt;Kontak&lt;/a&gt;
+    &lt;/div&gt;
+    &lt;button class="wc-hamburger" onclick="toggleMenu()"&gt;☰&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/nav&gt;`</span>;
+
+      <span class="kw">case</span> <span class="str">'heading'</span>:
+        <span class="kw">return</span> <span class="str">`&lt;h1 class="wc-heading"&gt;${el.content}&lt;/h1&gt;`</span>;
+
+      <span class="kw">case</span> <span class="str">'paragraph'</span>:
+        <span class="kw">return</span> <span class="str">`&lt;p class="wc-paragraph"&gt;${el.content}&lt;/p&gt;`</span>;
+
+      <span class="kw">case</span> <span class="str">'button'</span>:
+        <span class="kw">return</span> <span class="str">`&lt;div class="wc-btn-wrap"&gt;
+  &lt;a href="#" class="wc-btn"&gt;${el.content}&lt;/a&gt;
+&lt;/div&gt;`</span>;
+
+      <span class="kw">case</span> <span class="str">'image'</span>:
+        <span class="kw">return</span> <span class="str">`&lt;div class="wc-img-wrap"&gt;
+  &lt;img src="${el.content}" alt="gambar" class="wc-img" loading="lazy" /&gt;
+&lt;/div&gt;`</span>;
+
+      <span class="kw">case</span> <span class="str">'divider'</span>:
+        <span class="kw">return</span> <span class="str">'&lt;hr class="wc-divider" /&gt;'</span>;
+
+      <span class="kw">case</span> <span class="str">'quote'</span>:
+        <span class="kw">return</span> <span class="str">`&lt;blockquote class="wc-quote"&gt;
+  &lt;p&gt;"${el.content}"&lt;/p&gt;
+&lt;/blockquote&gt;`</span>;
+
+      <span class="kw">case</span> <span class="str">'footer'</span>:
+        <span class="kw">return</span> <span class="str">`&lt;footer class="wc-footer"&gt;
+  &lt;p&gt;${el.content}&lt;/p&gt;
+&lt;/footer&gt;`</span>;
+
+      <span class="kw">default</span>: <span class="kw">return</span> <span class="str">''</span>;
+    }
+  };
+
+  <span class="kw">const</span> bodyContent = elements.<span class="fn">map</span>(renderElement).<span class="fn">join</span>(<span class="str">'\n'</span>);
+
+  <span class="cm">// Template HTML final yang dihasilkan</span>
+  <span class="kw">return</span> <span class="str">`&lt;!DOCTYPE html&gt;
+&lt;html lang="id"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;meta name="description" content="${description}"&gt;
+  &lt;title&gt;${projectName}&lt;/title&gt;
+  &lt;style&gt;
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --primary: ${primaryColor}; --font: ${fontFamily}; }
+    body { font-family: var(--font); color: #1a1a2e; line-height: 1.6; }
+    .wc-container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    /* Navbar */
+    .wc-navbar { background: #fff; border-bottom: 1px solid #eee;
+      padding: 16px 0; position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+    .wc-navbar .wc-container { display: flex; justify-content: space-between; align-items: center; }
+    .wc-brand { font-size: 1.3rem; font-weight: 800; color: var(--primary); text-decoration: none; }
+    .wc-nav-links a { margin-left: 24px; color: #555; text-decoration: none; font-weight: 500; transition: color 0.2s; }
+    .wc-nav-links a:hover { color: var(--primary); }
+    .wc-hamburger { display: none; background: none; border: none; font-size: 1.4rem; cursor: pointer; }
+
+    /* Elemen Konten */
+    .wc-heading { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900;
+      color: #0f172a; padding: 48px 24px 24px; max-width: 1100px;
+      margin: 0 auto; line-height: 1.1; letter-spacing: -0.02em; }
+    .wc-paragraph { font-size: 1.05rem; color: #475569; padding: 8px 24px 24px;
+      max-width: 720px; margin: 0 auto; }
+    .wc-btn-wrap { padding: 12px 24px 24px; max-width: 1100px; margin: 0 auto; }
+    .wc-btn { display: inline-block; background: var(--primary); color: #fff;
+      text-decoration: none; padding: 14px 32px; border-radius: 10px;
+      font-size: 1rem; font-weight: 700; transition: all 0.2s; }
+    .wc-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,123,255,0.3); }
+    .wc-img-wrap { padding: 12px 24px; max-width: 1100px; margin: 0 auto; }
+    .wc-img { width: 100%; border-radius: 16px; display: block;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.1); }
+    .wc-divider { border: none; border-top: 2px solid #f1f5f9; margin: 24px auto; max-width: 1100px; }
+    .wc-quote { border-left: 4px solid var(--primary); margin: 24px;
+      padding: 20px 28px; background: #f8fafc; border-radius: 0 12px 12px 0; }
+    .wc-quote p { font-size: 1.15rem; color: #334155; font-style: italic; font-weight: 500; }
+    .wc-footer { background: #0f172a; color: #94a3b8; text-align: center;
+      padding: 40px 24px; margin-top: 48px; font-size: 0.9rem; }
+
+    /* Responsive Mobile */
+    @media (max-width: 768px) {
+      .wc-nav-links { display: none; }
+      .wc-nav-links.open { display: flex; flex-direction: column; position: absolute;
+        top: 60px; left: 0; right: 0; background: #fff; padding: 16px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+      .wc-nav-links.open a { margin: 8px 0; }
+      .wc-hamburger { display: block; }
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+${bodyContent}
+&lt;script&gt;
+  function toggleMenu() {
+    document.querySelector('.wc-nav-links').classList.toggle('open');
+  }
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;`</span>;
+}</div>
+  </div>
+</section>
+
+<div class="sec-divider"></div>
+
+<!-- ==================== STEP 8 ==================== -->
+<section class="step-block" id="s8">
+  <div class="step-label">
+    <div class="step-num-badge num-cyan">08</div>
+    <div class="step-heading">
+      <h2>Build File APK</h2>
+      <div class="step-tag">JADIKAN APLIKASI NYATA</div>
+    </div>
+  </div>
+  <div class="step-divider"></div>
+
+  <div class="hl-card hl-lime">
+    <span class="hl-icon">🚀</span>
+    <span>Kita gunakan <strong>EAS Build</strong> — layanan cloud Expo yang mem-build APK di server mereka. Kamu tidak perlu install Android Studio. Cukup jalankan satu perintah, tunggu 10–15 menit, dan APK siap didownload.</span>
+  </div>
+
+  <div class="flow-steps">
+    <div class="flow-item">
+      <div class="flow-circle">1</div>
+      <div class="flow-content">
+        <div class="flow-title">Konfigurasi app.json</div>
+        <div class="flow-desc">Set nama, bundle ID, versi, dan icon aplikasi</div>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-circle">2</div>
+      <div class="flow-content">
+        <div class="flow-title">Buat file eas.json</div>
+        <div class="flow-desc">Tentukan tipe build: <code>apk</code> untuk distribusi langsung, <code>app-bundle</code> untuk Play Store</div>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-circle">3</div>
+      <div class="flow-content">
+        <div class="flow-title">Jalankan perintah build</div>
+        <div class="flow-desc"><code>eas build --platform android --profile preview</code></div>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-circle">4</div>
+      <div class="flow-content">
+        <div class="flow-title">Download APK</div>
+        <div class="flow-desc">Setelah selesai (~15 menit), link download APK akan muncul di terminal dan email</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-topbar">
+      <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+      <span class="code-filename">app.json — Konfigurasi Aplikasi</span>
+      <button class="code-copy" onclick="cp(this)">Salin</button>
+    </div>
+    <div class="code-pre">{
+  <span class="str">"expo"</span>: {
+    <span class="str">"name"</span>: <span class="str">"WebCraft"</span>,
+    <span class="str">"slug"</span>: <span class="str">"webcraft-builder"</span>,
+    <span class="str">"version"</span>: <span class="str">"1.0.0"</span>,
+    <span class="str">"orientation"</span>: <span class="str">"portrait"</span>,
+    <span class="str">"icon"</span>: <span class="str">"./assets/icon.png"</span>,
+    <span class="str">"userInterfaceStyle"</span>: <span class="str">"dark"</span>,
+    <span class="str">"splash"</span>: {
+      <span class="str">"image"</span>: <span class="str">"./assets/splash.png"</span>,
+      <span class="str">"resizeMode"</span>: <span class="str">"contain"</span>,
+      <span class="str">"backgroundColor"</span>: <span class="str">"#05070d"</span>
+    },
+    <span class="str">"android"</span>: {
+      <span class="str">"adaptiveIcon"</span>: {
+        <span class="str">"foregroundImage"</span>: <span class="str">"./assets/adaptive-icon.png"</span>,
+        <span class="str">"backgroundColor"</span>: <span class="str">"#05070d"</span>
+      },
+      <span class="str">"package"</span>: <span class="str">"com.namaKamu.webcraft"</span>,
+      <span class="str">"versionCode"</span>: <span class="num">1</span>,
+      <span class="str">"permissions"</span>: [
+        <span class="str">"READ_EXTERNAL_STORAGE"</span>,
+        <span class="str">"WRITE_EXTERNAL_STORAGE"</span>
+      ]
+    },
+    <span class="str">"plugins"</span>: [<span class="str">"expo-file-system"</span>]
+  }
+}</div>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-topbar">
+      <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+      <span class="code-filename">eas.json — Konfigurasi Build</span>
+      <button class="code-copy" onclick="cp(this)">Salin</button>
+    </div>
+    <div class="code-pre">{
+  <span class="str">"cli"</span>: { <span class="str">"version"</span>: <span class="str">"&gt;= 5.0.0"</span> },
+  <span class="str">"build"</span>: {
+    <span class="str">"development"</span>: {
+      <span class="str">"developmentClient"</span>: <span class="kw">true</span>,
+      <span class="str">"distribution"</span>: <span class="str">"internal"</span>
+    },
+    <span class="str">"preview"</span>: {
+      <span class="str">"android"</span>: {
+        <span class="str">"buildType"</span>: <span class="str">"apk"</span>  <span class="cm">// ← INI yang menghasilkan file .APK</span>
+      }
+    },
+    <span class="str">"production"</span>: {
+      <span class="str">"android"</span>: {
+        <span class="str">"buildType"</span>: <span class="str">"app-bundle"</span>  <span class="cm">// ← Untuk upload ke Play Store</span>
+      }
+    }
+  }
+}</div>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-topbar">
+      <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+      <span class="code-filename">Terminal — Perintah Build APK</span>
+      <button class="code-copy" onclick="cp(this)">Salin</button>
+    </div>
+    <div class="code-pre"><span class="cm"># Pastikan sudah login dulu</span>
+eas login
+
+<span class="cm"># Inisialisasi proyek EAS (hanya perlu sekali)</span>
+eas build:configure
+
+<span class="cm"># BUILD APK — Ini yang utama!</span>
+eas build <span class="op">--</span>platform android <span class="op">--</span>profile preview
+
+<span class="cm"># Tunggu 10-20 menit. Setelah selesai, jalankan ini
+# untuk mendapat link download APK:</span>
+eas build:list
+
+<span class="cm"># Atau buka dashboard di browser:</span>
+<span class="cm"># https://expo.dev/accounts/[username]/projects/webcraft-builder/builds</span></div>
+  </div>
+</section>
+
+<div class="sec-divider"></div>
+
+<!-- ==================== STEP 9 ==================== -->
+<section class="step-block" id="s9">
+  <div class="step-label">
+    <div class="step-num-badge num-violet">09</div>
+    <div class="step-heading">
+      <h2>Testing & Distribusi</h2>
+      <div class="step-tag">LANGKAH TERAKHIR</div>
+    </div>
+  </div>
+  <div class="step-divider"></div>
+
+  <div class="glass-card">
+    <div class="card-title">✅ Checklist Testing Wajib</div>
+    <ul class="check-list" id="cl-test">
+      <li class="check-item" onclick="tick(this)"><span class="check-box"><svg viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 5-5" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Install APK di 2-3 HP Android berbeda untuk test kompatibilitas</li>
+      <li class="check-item" onclick="tick(this)"><span class="check-box"><svg viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 5-5" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Buat proyek baru — tambah semua tipe elemen, edit isinya</li>
+      <li class="check-item" onclick="tick(this)"><span class="check-box"><svg viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 5-5" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Simpan proyek, tutup aplikasi, buka lagi — pastikan data masih ada</li>
+      <li class="check-item" onclick="tick(this)"><span class="check-box"><svg viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 5-5" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Export ke HTML — buka file di browser HP & komputer</li>
+      <li class="check-item" onclick="tick(this)"><span class="check-box"><svg viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 5-5" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Test mode portrait dan landscape (putar HP)</li>
+      <li class="check-item" onclick="tick(this)"><span class="check-box"><svg viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 5-5" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Coba hapus proyek dari Home Screen — pastikan benar terhapus</li>
+      <li class="check-item" onclick="tick(this)"><span class="check-box"><svg viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 5-5" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Ganti nama app, icon, dan splash screen jadi custom</li>
+      <li class="check-item" onclick="tick(this)"><span class="check-box"><svg viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 5-5" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Preview website di dalam app tampil dengan benar</li>
+    </ul>
+  </div>
+
+  <h3 style="font-size:0.95rem;font-weight:800;color:#fff;margin:1.5rem 0 0.8rem;">📤 Cara Distribusi APK</h3>
+
+  <div class="grid-3">
+    <div class="tool-tile">
+      <div class="tool-emoji">🔗</div>
+      <div class="tool-name">Google Drive</div>
+      <div class="tool-desc">Upload APK, buat link publik, bagikan ke siapapun. Paling mudah!</div>
+    </div>
+    <div class="tool-tile">
+      <div class="tool-emoji">🐙</div>
+      <div class="tool-name">GitHub Releases</div>
+      <div class="tool-desc">Profesional. Upload sebagai Release — ada version history otomatis</div>
+    </div>
+    <div class="tool-tile">
+      <div class="tool-emoji">🏪</div>
+      <div class="tool-name">Google Play Store</div>
+      <div class="tool-desc">Untuk distribusi publik besar. Daftar $25 sekali, build app-bundle</div>
+    </div>
+  </div>
+
+  <div class="hl-card hl-amber">
+    <span class="hl-icon">⚠️</span>
+    <span><strong>Izin Install APK di Android:</strong> Saat user pertama kali install APK dari luar Play Store, Android akan minta izin "Install from unknown sources". Ini normal — user perlu mengaktifkannya di Settings → Security.</span>
+  </div>
+
+  <div class="glass-card">
+    <div class="card-title">🎯 Pengembangan Selanjutnya (Setelah Selesai)</div>
+    <ul class="check-list">
+      <li class="check-item" onclick="tick(this)"><span class="check-box"><svg viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 5-5" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Tambah lebih banyak komponen: galeri foto, maps, form input, timer</li>
+      <li class="check-item" onclick="tick(this)"><span class="check-box"><svg viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 5-5" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Buat 5+ template siap pakai (toko online, restoran, portofolio, dsb)</li>
+      <li class="check-item" onclick="tick(this)"><span class="check-box"><svg viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 5-5" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Tambah fitur edit warna, font, dan ukuran per elemen</li>
+      <li class="check-item" onclick="tick(this)"><span class="check-box"><svg viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 5-5" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Integrasi upload ke hosting langsung dari aplikasi</li>
+      <li class="check-item" onclick="tick(this)"><span class="check-box"><svg viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 5-5" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Tambah fitur undo/redo untuk editor</li>
+    </ul>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<div class="final-cta">
+  <div style="font-family:var(--mono);font-size:0.65rem;color:var(--lime);letter-spacing:0.2em;margin-bottom:0.6rem;opacity:0.8">✦ STUDY WITH LISA · 2026 ✦</div>
+  <h2>🎉 Kamu <span>Berhasil!</span></h2>
+  <p>Dengan menyelesaikan semua 10 langkah ini, kamu sudah punya APK Website Builder yang nyata, fungsional, dan siap digunakan. Ini bukan latihan — ini aplikasi asli buatan kamu sendiri.</p>
+  <p style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:-1rem;margin-bottom:2rem">— Lisa, WebCraft Academy 2026</p>
+  <div class="cta-actions">
+    <button class="btn-primary" onclick="resetAll()">🔄 Mulai Lagi dari Awal</button>
+    <button class="btn-ghost" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Kembali ke Atas</button>
+  </div>
+</div>
+
+</div><!-- /content-wrap -->
+</div><!-- /main -->
+
+<script>
+(function () {
+  "use strict";
+
+  /* ══════════ 1. STORAGE KEYS ══════════ */
+  const K = {
+    ticks:  'wc_ticks',
+    theme:  'wc_theme',
+    xp:     'wc_xp',
+    streak: 'wc_streak',
+    date:   'wc_date',
+    time:   'wc_time',
+  };
+
+  /* ══════════ 2. SCROLL PROGRESS BAR ══════════ */
+  const scrollBar = document.createElement('div');
+  Object.assign(scrollBar.style, {
+    position:'fixed',top:'0',left:'0',height:'3px',width:'0%',
+    background:'linear-gradient(90deg,#c8ff57,#57e5ff)',
+    zIndex:'99999',transition:'width 0.08s linear',pointerEvents:'none'
+  });
+  document.body.prepend(scrollBar);
+  function updateScrollBar() {
+    const d = document.documentElement.scrollHeight - window.innerHeight;
+    scrollBar.style.width = (d > 0 ? (window.scrollY / d) * 100 : 0).toFixed(2) + '%';
+  }
+  window.addEventListener('scroll', updateScrollBar, { passive: true });
+  updateScrollBar();
+
+  /* ══════════ 3. CUSTOM CURSOR ══════════ */
+  const cur = document.getElementById('cur'), curR = document.getElementById('curR');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove', e => {
+    mx=e.clientX; my=e.clientY;
+    cur.style.left=(mx-6)+'px'; cur.style.top=(my-6)+'px';
+  });
+  (function anim(){ rx+=(mx-rx)*0.18; ry+=(my-ry)*0.18;
+    curR.style.left=(rx-18)+'px'; curR.style.top=(ry-18)+'px';
+    requestAnimationFrame(anim); })();
+  const hSel='a,button,.nav-item,.check-item,.tool-tile,.quiz-opt,.phase-tab,.code-copy,.theme-toggle';
+  document.addEventListener('mouseover',e=>{ if(e.target.closest(hSel)){ cur.style.transform='scale(2.5)'; curR.style.transform='scale(0.55)'; }});
+  document.addEventListener('mouseout', e=>{ if(e.target.closest(hSel)){ cur.style.transform='scale(1)'; curR.style.transform='scale(1)'; }});
+
+  /* ══════════ 4. TOAST ══════════ */
+  function toast(icon, msg, type='lime', dur=3000) {
+    const c = document.getElementById('toast-container');
+    const t = document.createElement('div');
+    t.className = 'toast toast-' + type;
+    t.innerHTML = `<span class="toast-icon">${icon}</span><span>${msg}</span>`;
+    c.appendChild(t);
+    requestAnimationFrame(() => { requestAnimationFrame(() => t.classList.add('show')); });
+    setTimeout(() => {
+      t.classList.remove('show'); t.classList.add('hide');
+      setTimeout(() => t.remove(), 400);
+    }, dur);
+  }
+
+  /* ══════════ 5. XP + LEVEL SYSTEM ══════════ */
+  const XP_PER_TICK = 10;
+  const LEVELS = [
+    {lv:1,name:'Pemula',min:0},{lv:2,name:'Curious',min:50},
+    {lv:3,name:'Builder',min:150},{lv:4,name:'Hacker',min:300},
+    {lv:5,name:'Ninja',min:500},{lv:6,name:'Master',min:800},
+  ];
+  let xp = 0;
+  try { xp = parseInt(localStorage.getItem(K.xp) || '0'); } catch(_){}
+
+  function saveXP() { try { localStorage.setItem(K.xp, xp); } catch(_){} }
+
+  function getLevel(x) {
+    let lv = LEVELS[0];
+    for (const l of LEVELS) { if (x >= l.min) lv = l; }
+    return lv;
+  }
+
+  function updateXPBar(animate=false) {
+    const lv = getLevel(xp);
+    const next = LEVELS.find(l => l.min > lv.min);
+    const pct  = next ? Math.round(((xp - lv.min) / (next.min - lv.min)) * 100) : 100;
+    document.getElementById('xp-val').textContent  = xp + ' XP';
+    document.getElementById('level-val').textContent = 'Lv.' + lv.lv + ' ' + lv.name;
+    document.getElementById('xp-bar').style.width = pct + '%';
+  }
+
+  function addXP(amount, reason='') {
+    const oldLv = getLevel(xp).lv;
+    xp += amount;
+    saveXP();
+    updateXPBar(true);
+    const newLv = getLevel(xp).lv;
+    if (newLv > oldLv) {
+      const lv = getLevel(xp);
+      toast('🏆', 'Level Up! Kamu sekarang ' + lv.name, 'amber', 4000);
+    } else if (reason) {
+      toast('⚡', '+' + amount + ' XP — ' + reason, 'lime', 2200);
+    }
+  }
+
+  /* ══════════ 6. STREAK ══════════ */
+  function updateStreak() {
+    const today = new Date().toDateString();
+    let streak = 0, lastDate = '';
+    try {
+      streak   = parseInt(localStorage.getItem(K.streak) || '0');
+      lastDate = localStorage.getItem(K.date) || '';
+    } catch(_){}
+
+    if (lastDate !== today) {
+      const yesterday = new Date(Date.now() - 86400000).toDateString();
+      streak = (lastDate === yesterday) ? streak + 1 : 1;
+      try {
+        localStorage.setItem(K.streak, streak);
+        localStorage.setItem(K.date, today);
+      } catch(_){}
+      if (streak > 1) toast('🔥', 'Streak ' + streak + ' hari berturut-turut! Gila!', 'amber', 3500);
+    }
+    document.getElementById('streak-val').textContent = streak + ' hari';
+    return streak;
+  }
+
+  /* ══════════ 7. SESSION TIMER ══════════ */
+  let sessionSec = 0;
+  try { sessionSec = parseInt(localStorage.getItem(K.time) || '0'); } catch(_){}
+  setInterval(() => {
+    sessionSec++;
+    try { localStorage.setItem(K.time, sessionSec); } catch(_){}
+    const h = Math.floor(sessionSec / 3600);
+    const m = Math.floor((sessionSec % 3600) / 60);
+    document.getElementById('time-val').textContent = h > 0 ? h + 'j ' + m + 'm' : m + 'm';
+  }, 1000);
+
+  /* ══════════ 8. THEME TOGGLE ══════════ */
+  let isLight = false;
+  try { isLight = localStorage.getItem(K.theme) === 'light'; } catch(_){}
+
+  function applyTheme(light, announce=false) {
+    isLight = light;
+    document.documentElement.classList.toggle('light', light);
+    const track = document.getElementById('toggle-track');
+    const label = document.getElementById('toggle-label');
+    const icon  = document.getElementById('theme-icon');
+    if (track) track.classList.toggle('on', light);
+    if (label) label.textContent = light ? 'DARK MODE' : 'LIGHT MODE';
+    if (icon)  icon.textContent  = light ? '🌙' : '☀️';
+    // scroll progress bar color
+    scrollBar.style.background = light
+      ? 'linear-gradient(90deg,#5c9900,#0080aa)'
+      : 'linear-gradient(90deg,#c8ff57,#57e5ff)';
+    try { localStorage.setItem(K.theme, light ? 'light' : 'dark'); } catch(_){}
+    if (announce) toast(light ? '☀️':'🌙', light ? 'Light mode aktif!':'Dark mode aktif!', light?'amber':'cyan', 2000);
+  }
+
+  window.toggleTheme = function() { applyTheme(!isLight, true); };
+  applyTheme(isLight, false);
+
+  /* ══════════ 9. CHECKLIST + XP ══════════ */
+  let tickState = {};
+  try { tickState = JSON.parse(localStorage.getItem(K.ticks) || '{}'); } catch(_){}
+
+  window.tick = function(li) {
+    li.classList.toggle('checked');
+    const list = li.closest('.check-list');
+    const key  = (list ? list.id : 'x') + '_' + Array.from(li.parentNode.children).indexOf(li);
+    const nowChecked = li.classList.contains('checked');
+    tickState[key] = nowChecked;
+    try { localStorage.setItem(K.ticks, JSON.stringify(tickState)); } catch(_){}
+    if (nowChecked) addXP(XP_PER_TICK, 'item selesai!');
+    else { xp = Math.max(0, xp - XP_PER_TICK); saveXP(); updateXPBar(); }
+    updateProgress();
+  };
+
+  function loadTicks() {
+    document.querySelectorAll('.check-list').forEach(list => {
+      Array.from(list.children).forEach((li, i) => {
+        if (tickState[list.id + '_' + i]) li.classList.add('checked');
+      });
+    });
+  }
+
+  /* ══════════ 10. PROGRESS + STEP DONE BADGE ══════════ */
+  const prevStepDone = {};
+
+  function updateProgress() {
+    const all  = document.querySelectorAll('.check-item').length;
+    const done = document.querySelectorAll('.check-item.checked').length;
+    const pct  = all ? Math.round((done / all) * 100) : 0;
+
+    const bar = document.getElementById('prog-bar');
+    const txt = document.getElementById('prog-txt');
+    const pct2= document.getElementById('prog-pct');
+    if (bar)  bar.style.width   = pct + '%';
+    if (txt)  txt.textContent   = done + ' dari ' + all + ' selesai';
+    if (pct2) pct2.textContent  = pct + '%';
+
+    ['s0','s1','s2','s3','s4','s5','s6','s7','s8','s9'].forEach(sid => {
+      const sec = document.getElementById(sid);
+      if (!sec) return;
+      const sAll  = sec.querySelectorAll('.check-item').length;
+      const sDone = sec.querySelectorAll('.check-item.checked').length;
+      const nav   = document.querySelector(`.nav-item[data-target="${sid}"]`);
+      if (nav) nav.classList.toggle('done', sAll > 0 && sDone === sAll);
+
+      // Step selesai — tampilkan badge + toast sekali
+      if (sAll > 0 && sDone === sAll && !prevStepDone[sid]) {
+        prevStepDone[sid] = true;
+        let badge = sec.querySelector('.step-complete-badge');
+        if (!badge) {
+          badge = document.createElement('div');
+          badge.className = 'step-complete-badge';
+          badge.innerHTML = '✅ Langkah ini selesai! +50 XP bonus';
+          sec.appendChild(badge);
+          addXP(50, 'step selesai!');
+        }
+        badge.classList.add('show');
+        toast('🎉', 'Step selesai! Lanjut ke berikutnya!', 'lime', 3000);
+      }
+    });
+
+    // Selesai semua
+    if (pct === 100 && done > 0) {
+      toast('🚀', 'Semua selesai! Kamu luar biasa!', 'amber', 5000);
+    }
+  }
+
+  /* ══════════ 11. INTERSECTION OBSERVER ══════════ */
+  const stepBlocks = document.querySelectorAll('.step-block');
+
+  const fadeObs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); fadeObs.unobserve(e.target); }});
+  }, { threshold: 0.07 });
+
+  const navObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.target === id));
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -35% 0px' });
+
+  stepBlocks.forEach(el => { fadeObs.observe(el); navObs.observe(el); });
+
+  /* ══════════ 12. PHASE TABS ══════════ */
+  window.switchTab = function(btn, panelId) {
+    btn.closest('.phase-tabs').querySelectorAll('.phase-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    const scope = btn.closest('section') || document;
+    scope.querySelectorAll('.phase-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(panelId)?.classList.add('active');
+  };
+
+  /* ══════════ 13. COPY CODE ══════════ */
+  window.cp = function(btn) {
+    const pre = btn.closest('.code-wrap')?.querySelector('.code-pre');
+    if (!pre) return;
+    const text = pre.innerText || pre.textContent;
+    const show = () => {
+      const o = btn.textContent; btn.textContent='✓ Disalin'; btn.classList.add('copied');
+      toast('📋','Kode disalin!','cyan',1800);
+      setTimeout(()=>{ btn.textContent=o; btn.classList.remove('copied'); },2000);
+    };
+    if (navigator.clipboard?.writeText) navigator.clipboard.writeText(text).then(show).catch(()=>fb(text,show));
+    else fb(text, show);
+  };
+  function fb(text, cb) {
+    const ta=Object.assign(document.createElement('textarea'),{value:text,style:'position:fixed;top:-9999px;opacity:0'});
+    document.body.appendChild(ta); ta.select();
+    try{document.execCommand('copy');cb();}catch(_){}
+    document.body.removeChild(ta);
+  }
+
+  /* ══════════ 14. SIDEBAR TOGGLE ══════════ */
+  window.toggleSidebar = function() { document.getElementById('sidebar')?.classList.toggle('open'); };
+  document.addEventListener('click', e => {
+    const sb=document.getElementById('sidebar'), tog=document.querySelector('.mob-toggle');
+    if (sb?.classList.contains('open') && !sb.contains(e.target) && !tog?.contains(e.target)) sb.classList.remove('open');
+  });
+  document.addEventListener('keydown', e => { if(e.key==='Escape') document.getElementById('sidebar')?.classList.remove('open'); });
+
+  /* ══════════ 15. SCROLL TO STEP ══════════ */
+  window.goTo = function(id) {
+    document.getElementById(id)?.scrollIntoView({ behavior:'smooth', block:'start' });
+    document.getElementById('sidebar')?.classList.remove('open');
+  };
+
+  /* ══════════ 16. QUIZ ══════════ */
+  window.answer = function(btn, correct) {
+    const opts = btn.closest('.quiz-opts')?.querySelectorAll('.quiz-opt');
+    if (!opts) return;
+    opts.forEach(o => o.disabled = true);
+    btn.classList.add(correct ? 'correct' : 'wrong');
+    if (!correct) opts.forEach(o => { if(o.dataset.correct==='true') o.classList.add('correct'); });
+    btn.closest('.quiz-wrap')?.querySelector('.quiz-result')?.classList.add('show');
+    if (correct) { addXP(20, 'quiz benar!'); toast('🧠','+20 XP — Jawaban benar!','lime',2500); }
+    else toast('❌','Salah, tapi itu bagian dari belajar!','rose',2500);
+  };
+
+  /* ══════════ 17. RESET ══════════ */
+  window.resetAll = function() {
+    try { localStorage.removeItem(K.ticks); localStorage.removeItem(K.xp); } catch(_){}
+    tickState = {}; xp = 0;
+    document.querySelectorAll('.check-item.checked').forEach(li => li.classList.remove('checked'));
+    document.querySelectorAll('.step-complete-badge').forEach(b => b.remove());
+    Object.keys(prevStepDone).forEach(k => delete prevStepDone[k]);
+    updateProgress(); updateXPBar();
+    window.scrollTo({ top:0, behavior:'smooth' });
+    toast('🔄','Progress direset. Semangat dari awal!','amber',3000);
+  };
+
+  /* ══════════ INIT ══════════ */
+  loadTicks();
+  updateStreak();
+  updateProgress();
+  updateXPBar();
+
+  // Sambut user
+  setTimeout(() => {
+    const done = document.querySelectorAll('.check-item.checked').length;
+    if (done > 0) toast('👩‍💻', 'Welcome back! ' + done + ' item sudah selesai. Lanjutkan, Lisa percaya kamu bisa!', 'cyan', 3500);
+    else toast('👩‍💻', 'Halo! Selamat belajar bersama Lisa! Mulai dari Step 00.', 'lime', 3000);
+  }, 800);
+
+  console.log('%c Study with Lisa · WebCraft Academy 2026 ✅', 'background:#c8ff57;color:#000;font-weight:bold;padding:4px 12px;border-radius:4px;');
+})();
+</script>
+</body>
+</html>
